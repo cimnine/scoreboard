@@ -7,35 +7,27 @@ import javax.jmdns.ServiceInfo;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class Discovery {
-    private static final String fallbackMdnsName = "scoreboard";
-
     private JmDNS jmdns;
     private final int port;
     private final String name;
 
-    public Discovery(int port) {
-        this(port, fallbackMdnsName);
-    }
-
     public Discovery(int port, String mdnsIncomingName) {
         String mdnsStrippedName = mdnsIncomingName.replaceAll("[^0-9a-zA-Z\\-]", "");
-        this.name = mdnsStrippedName.isEmpty() ? fallbackMdnsName : mdnsStrippedName;
+        this.name = mdnsStrippedName.isEmpty() ? "scoreboard" : mdnsStrippedName;
         this.port = port;
     }
 
-    public void start() {
-        CompletableFuture.runAsync(this::internalStart);
-    }
+    public String getName() { return name; }
 
-    public void internalStart() {
+    public boolean start() {
         try {
             jmdns = JmDNS.create(this.name);
         } catch (IOException e) {
             Logger.printStackTrace("mDNS discovery", e);
             Logger.printMessage("Couldn't register any service for advertising via mDNS.");
+            return false;
         }
 
         List<ServiceInfo> services = Arrays.asList(
@@ -56,9 +48,11 @@ public class Discovery {
         }
 
         if (success) {
-            Logger.printMessage("Advertising via mDNS: http://scoreboard.local:" + port);
+            Logger.printMessage("Advertising via mDNS: http://" + name + ".local:" + port);
+            return true;
         } else {
             Logger.printMessage("Couldn't register any service for advertising via mDNS.");
+            return false;
         }
     }
 

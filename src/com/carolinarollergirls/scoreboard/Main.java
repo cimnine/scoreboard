@@ -50,13 +50,18 @@ public final class Main extends Logger {
         setLogger(this);
 
         if (discoveryEnabled) {
-            discovery = new Discovery(port);
+            discovery = new Discovery(port, discoveryName);
         }
     }
 
     public void start() {
         if (guiEnabled) {
             createGui();
+        }
+
+        boolean discoverySuccessful = false;
+        if (discoveryEnabled && discovery != null) {
+            discoverySuccessful = discovery.start();
         }
 
         Logger.printMessage("Starting up at " + LocalDateTime.now().toString());
@@ -73,7 +78,8 @@ public final class Main extends Logger {
         new ScoreBoardJSONListener(scoreBoard, jsm);
 
         // Controllers.
-        ScoreBoardWebserver jetty = new ScoreBoardWebserver(scoreBoard, jsm, host, port, useMetrics);
+        ScoreBoardWebserver jetty =
+            new ScoreBoardWebserver(scoreBoard, jsm, host, port, useMetrics, discoverySuccessful ? discovery.getName() : null);
 
         // Viewers.
         if (useMetrics) { new ScoreBoardMetricsCollector(scoreBoard).register(); }
@@ -96,10 +102,6 @@ public final class Main extends Logger {
         } catch (Throwable e) {
             Logger.printMessage("Could not start server");
             stop(e);
-        }
-
-        if (discoveryEnabled && discovery != null) {
-            discovery.start();
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -142,8 +144,6 @@ public final class Main extends Logger {
     }
 
     private void parseArgv(String[] argv) {
-        boolean gui = false;
-
         for (String arg : argv) {
             if (arg.equals("--gui") || arg.equals("-g")) {
                 guiEnabled = true;
@@ -161,6 +161,8 @@ public final class Main extends Logger {
                 discoveryEnabled = true;
             } else if (arg.equals("--nodiscovery") || arg.equals("-D")) {
                 discoveryEnabled = false;
+            } else if (arg.startsWith("--discovery-name=") || arg.startsWith("-n=")) {
+                discoveryName = arg.split("=", 2)[1];
             } else if (arg.equals("--help") || arg.equals("-h")) {
                 System.out.println("Options:");
                 System.out.println("  --gui, -g                  Create GUI window to show program messages.");
@@ -172,6 +174,7 @@ public final class Main extends Logger {
                 System.out.println("  --metrics, -m              Log metrics for developers");
                 System.out.println("  --discovery, -d            (default) Advertise the server via mDNS.");
                 System.out.println("  --nodiscovery, -D          Disable mDNS discovery.");
+                System.out.println("  --discovery-name=<name>, -n=<name> Set the mDNS name (default scoreboard).");
                 System.out.println("  --help, -h                 Show this help message");
                 System.exit(0);
             } else if (arg.equals("") || arg.startsWith("one-jar.")) {
@@ -303,6 +306,7 @@ public final class Main extends Logger {
 
     private Discovery discovery;
     private boolean discoveryEnabled = true;
+    private String discoveryName = "scoreboard";
     private boolean guiEnabled = false;
 
     private static ScoreBoard scoreBoard;

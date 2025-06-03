@@ -30,15 +30,19 @@ import io.prometheus.client.exporter.MetricsServlet;
 import io.prometheus.client.filter.MetricsFilter;
 import io.prometheus.client.hotspot.DefaultExports;
 
-/**
- * Set up and start the Webserver
- */
+/** Set up and start the Webserver. */
 public class ScoreBoardWebserver {
     public ScoreBoardWebserver(ScoreBoard sb, JSONStateManager jsm, String host, int port, boolean useMetrics) {
+        this(sb, jsm, host, port, useMetrics, null);
+    }
+
+    public ScoreBoardWebserver(ScoreBoard sb, JSONStateManager jsm, String host, int port,
+                                            boolean useMetrics, String discoveryName) {
         scoreBoard = sb;
         this.jsm = jsm;
         this.host = host;
         this.port = port;
+        this.discoveryName = discoveryName;
 
         init(useMetrics);
     }
@@ -78,7 +82,7 @@ public class ScoreBoardWebserver {
         sh.setInitParameter("etags", "true");
         sch.addServlet(sh, "/*");
 
-        urlsServlet = new UrlsServlet(server);
+        urlsServlet = new UrlsServlet(server, discoveryName);
         sch.addServlet(new ServletHolder(urlsServlet), "/urls/*");
 
         ws = new WS(scoreBoard, jsm, useMetrics);
@@ -136,6 +140,7 @@ public class ScoreBoardWebserver {
         }, 0, 3600, TimeUnit.SECONDS);
     }
 
+    private final String discoveryName;
     protected ScoreBoard scoreBoard;
     protected Server server;
     protected JSONStateManager jsm;

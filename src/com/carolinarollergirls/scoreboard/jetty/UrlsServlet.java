@@ -22,7 +22,9 @@ import org.eclipse.jetty.server.Server;
 
 /** This Servlet provides the list of URLs of the server for display on the frontend */
 public class UrlsServlet extends HttpServlet {
-    public UrlsServlet(Server s) { server = s; }
+    public UrlsServlet(Server s, String discoveryName) { server = s;
+        this.discoveryName = discoveryName;
+    }
 
     public Set<String> getUrls() throws MalformedURLException, SocketException {
         Set<String> urls = new TreeSet<>();
@@ -43,6 +45,9 @@ public class UrlsServlet extends HttpServlet {
     }
 
     protected void addURLs(Set<String> urls, String host, int port) throws MalformedURLException, SocketException {
+        if (discoveryName != null) {
+            addURL(urls, discoveryName + ".local", port);
+        }
         if (null == host) {
             for (NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
                 for (InetAddress addr : Collections.list(iface.getInetAddresses())) {
@@ -78,4 +83,5 @@ public class UrlsServlet extends HttpServlet {
     }
 
     protected Server server;
+    private final String discoveryName;
 }
