@@ -8,6 +8,7 @@ import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -22,7 +23,9 @@ import org.eclipse.jetty.server.Server;
 // import org.mortbay.jetty.*;
 
 public class UrlsServlet extends HttpServlet {
-    public UrlsServlet(Server s) { server = s; }
+    public UrlsServlet(Server s, String discoveryName) { server = s;
+        this.discoveryName = discoveryName;
+    }
 
     public Set<String> getUrls() throws MalformedURLException, SocketException {
         Set<String> urls = new TreeSet<>();
@@ -35,6 +38,9 @@ public class UrlsServlet extends HttpServlet {
     }
 
     protected void addURLs(Set<String> urls, String host, int port) throws MalformedURLException, SocketException {
+        if (discoveryName != null) {
+            urls.add(new URL("http", this.discoveryName + ".local", port, "/").toString());
+        }
         if (null == host) {
             for (NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
                 for (InetAddress addr : Collections.list(iface.getInetAddresses())) {
@@ -72,4 +78,5 @@ public class UrlsServlet extends HttpServlet {
     }
 
     protected Server server;
+    private final String discoveryName;
 }

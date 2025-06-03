@@ -53,6 +53,8 @@ dependencies {
     implementation("io.prometheus:simpleclient_servlet:0.14.1")
     implementation("io.prometheus:simpleclient_servlet_common:0.14.1")
 
+    implementation("org.jmdns:jmdns:3.6.1")
+
     compileOnly("javax.servlet:javax.servlet-api:3.1.0")
 
     testImplementation(libs.junit)
