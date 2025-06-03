@@ -103,7 +103,7 @@ public class ScoreBoardWebserver {
     public void start() {
         try {
             server.start();
-        } catch (Exception e) { throw new RuntimeException("Could not start server : " + e.toString()); }
+        } catch (Exception e) { throw new RuntimeException("Could not start server : " + e); }
 
         Logger.printMessage("");
         Logger.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
@@ -114,7 +114,7 @@ public class ScoreBoardWebserver {
         try {
             Iterator<String> urls = urlsServlet.getUrls().iterator();
             if (urls.hasNext()) { Logger.printMessage("or try one of these URLs:"); }
-            while (urls.hasNext()) { Logger.printMessage("	" + urls.next().toString()); }
+            while (urls.hasNext()) { Logger.printMessage("	" + urls.next()); }
         } catch (MalformedURLException muE) {
             Logger.printMessage("Internal error: malformed URL from Server Connector: " + muE.getMessage());
             Logger.printStackTrace("", muE);
