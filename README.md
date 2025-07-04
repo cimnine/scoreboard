@@ -1,28 +1,30 @@
+# CRG ScoreBoard
+
 The CRG ScoreBoard is a browser-based scoreboard solution that also provides overlays for video production and the ability to track full game data and export it to a WFTDA statsbook.
 
 The topics on the [Scoreboard Wiki Main Page](https://github.com/rollerderby/scoreboard/wiki/) are the primary documentation for the scoreboard. In order to reach out to the developers, it's best to use the [Github Issues Page](https://github.com/rollerderby/scoreboard/issues).
 
 A mailing list and wiki were available on SourceForge (the original location for this project) but they are not currently used. Subscribing to the SourceForge mailing list and consulting the wiki there is not recommended.
 
-# Installing the Scoreboard Software
+## Installing the Scoreboard Software
 
 These are instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard. If you have already done this, see [Setting up the Scoreboard](#setting-up-the-scoreboard) below.
 
-## Hardware Requirements
+### Hardware Requirements
 
 Most Apple or Windows computers that have been manufactured in the last ten years should be able to handle the scoreboard well on a standalone setup. In general, a machine with at least a dual-core 64-bit processor and 2 gigabytes of RAM should be sufficient. Using the scoreboard to provide video overlays or in a networked setup that includes penalty or lineup tracking typically requires more computing power.
 
 Chromebooks that have been modified to run Linux distributions have been used to host the scoreboard but hardware limitations (lack of a suitable display output or low-powered CPUs) may cause issues.
 
-## Software Requirements
+### Software Requirements
 
 The scoreboard should be unzipped into a folder on the local machine. The user running the software requires write access to this folder. Do not put the scoreboard in a folder that requires administrator privileges to write to unless you intend to run the software as an administrator.
 
-### Web Browser
+#### Web Browser
 
 [Google Chrome](https://www.google.com/chrome/) and [Microsoft Edge](https://www.microsoft.com/edge/) (as well as their open-source parent [Chromium](http://www.chromium.org/) or other browsers derived from it) are recommended for running the software. Some known issues may occur when using Mozilla Firefox or Apple Safari. Microsoft Internet Explorer is not recommended.
 
-### Java
+#### Java
 
 Java is required for providing a Java Runtime Environment (JRE) version 8.0 or newer. Installing the latest version of Oracle's Java is recommended.
 
@@ -32,13 +34,13 @@ Java is required for providing a Java Runtime Environment (JRE) version 8.0 or n
 
 - Linux users may already have a JRE from the OpenJDK project installed, if not, OpenJDK can be obtained from [their repositories](http://openjdk.java.net/install/).
 
-## Downloading the Scoreboard
+### Downloading the Scoreboard
 
 The project is currently hosted on GitHub, and ZIP files can be downloaded from the [GitHub Releases Page](https://github.com/rollerderby/scoreboard/releases). It is recommended that you use the version labeled "Latest release" (green box). The "Pre-release" (orange box) versions are currently in development and testing, and are not recommended for sanctioned games or tournaments.
 
 Please note that an older version of the project is still hosted on SourceForge and it is no longer maintained there.
 
-## Setting up the Scoreboard
+### Setting up the Scoreboard
 
 Once Chrome and Java are installed, use your file manager to navigate to the scoreboard folder and run the scoreboard background script by double-clicking on it.
 
@@ -57,3 +59,30 @@ Assuming that your scoreboard computer is set up with a monitor/laptop screen as
 When the control panel displays, it will ask you for an operator name. Enter your name and click Login. This operator name is used to store your personalized settings such as key controls.
 
 Now you can go to the tab with the documentation and either go to the Quick Start Guide or dive in deep right away and proceed with the section on the Controls page.
+
+## Development
+
+For development, you need at least Java SDK 21 on your computer.
+
+This project uses Gradle as dependency and build management tool.
+You don't need gradle installed, as you can use the gradle wrapper:
+
+```shell
+./gradlew run     # run the application during development
+./gradlew build   # compile and test
+./gradlew classes # only compile
+./gradlew build   # build for distribution
+```
+
+If you use an IDE such as IntelliJ or Eclipse,
+import this project as Gradle Project.
+Should this not work as expected,
+try generating the project files:
+
+```shell
+./gradlew eclipse # create configuration for eclipse
+./gradlew idea    # create configuration for intellij
+```
+
+Everything, such as classpath and build,
+should get automatically configured for you.
