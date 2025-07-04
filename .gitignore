@@ -1,29 +1,28 @@
-*~
-
-.DS_Store
+# legacy ant build directories
 bin
 test-bin
+
+# os-specific files
+.DS_Store
+*~
+
+# gradle-related files
+build
 release
-lib/crg-scoreboard.jar
-logs
-config/autosave
+.gradle
+
+# Eclipse settings
+.classpath
+.project
+.settings
+
+# IntelliJ settings
+.idea
+
+# node-related files
+node_modules
+
 **/*.xlsx
-html/stream
-html/images/teamlogo
-html/images/sponsor_banner
-html/images/fullscreen
-!html/images/fullscreen/test-image.png
-html/videos/fullscreen
-!html/videos/fullscreen/test-video.webm
-html/game-data
-html/custom
-!html/custom/view/example.html
-html/themes/custom
 GameData
-android/.gradle/
-android/assets/
-android/build/
-/rules/
-/game-data/
-/node_modules/
-/package-lock.json
+
+!.gitignore

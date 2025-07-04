@@ -1,9 +1,8 @@
-version: 2
+version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/base:current-22.04
+      - image: cimg/openjdk:21.0
     steps:
-      - run: sudo apt update && sudo apt -y install ant junit4
       - checkout
-      - run: ant
+      - run: ./gradlew build
