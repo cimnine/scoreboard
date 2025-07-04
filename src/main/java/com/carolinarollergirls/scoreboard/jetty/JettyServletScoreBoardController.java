@@ -32,11 +32,12 @@ import io.prometheus.client.hotspot.DefaultExports;
 
 public class JettyServletScoreBoardController {
     public JettyServletScoreBoardController(ScoreBoard sb, JSONStateManager jsm, String host, int port,
-                                            boolean useMetrics) {
+                                            boolean useMetrics, String discoveryName) {
         scoreBoard = sb;
         this.jsm = jsm;
         this.host = host;
         this.port = port;
+        this.discoveryName = discoveryName;
 
         init(useMetrics);
     }
@@ -76,7 +77,7 @@ public class JettyServletScoreBoardController {
         sh.setInitParameter("etags", "true");
         sch.addServlet(sh, "/*");
 
-        urlsServlet = new UrlsServlet(server);
+        urlsServlet = new UrlsServlet(server, discoveryName);
         sch.addServlet(new ServletHolder(urlsServlet), "/urls/*");
 
         ws = new WS(scoreBoard, jsm, useMetrics);
@@ -101,7 +102,7 @@ public class JettyServletScoreBoardController {
     public void start() {
         try {
             server.start();
-        } catch (Exception e) { throw new RuntimeException("Could not start server : " + e.toString()); }
+        } catch (Exception e) { throw new RuntimeException("Could not start server : " + e); }
 
         Logger.printMessage("");
         Logger.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
@@ -112,7 +113,7 @@ public class JettyServletScoreBoardController {
         try {
             Iterator<String> urls = urlsServlet.getUrls().iterator();
             if (urls.hasNext()) { Logger.printMessage("or try one of these URLs:"); }
-            while (urls.hasNext()) { Logger.printMessage("	" + urls.next().toString()); }
+            while (urls.hasNext()) { Logger.printMessage("	" + urls.next()); }
         } catch (MalformedURLException muE) {
             Logger.printMessage("Internal error: malformed URL from Server Connector: " + muE.getMessage());
             Logger.printStackTrace(muE);
@@ -134,6 +135,7 @@ public class JettyServletScoreBoardController {
         }, 0, 3600, TimeUnit.SECONDS);
     }
 
+    private final String discoveryName;
     protected ScoreBoard scoreBoard;
     protected Server server;
     protected JSONStateManager jsm;

@@ -32,27 +32,41 @@ import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController
 import com.carolinarollergirls.scoreboard.json.AutoSaveJSONState;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
+import com.carolinarollergirls.scoreboard.discovery.Discovery;
 import com.carolinarollergirls.scoreboard.utils.BasePath;
 import com.carolinarollergirls.scoreboard.utils.Logger;
 import com.carolinarollergirls.scoreboard.utils.Version;
 import com.carolinarollergirls.scoreboard.viewer.ScoreBoardMetricsCollector;
 
 public class Main extends Logger {
-    public static void main(String argv[]) { new Main(argv); }
+    public static void main(String[] argv) {
+        Main main = new Main(argv);
+        main.start();
+    }
 
-    public Main(String argv[]) {
+    public Main(String[] argv) {
         parseArgv(argv);
         logFile.getParentFile().mkdirs();
         setLogger(this);
-        Logger.printMessage("Starting up at " + LocalDateTime.now().toString());
-        importFromOldVersion();
-        start();
-        if (guiFrameText != null) {
-            guiFrameText.setText("ScoreBoard status: running (close this window to exit scoreboard)");
+
+        if (discoveryEnabled) {
+            discovery = new Discovery(port, discoveryName);
         }
     }
 
     public void start() {
+        if (guiEnabled) {
+            createGui();
+        }
+
+        boolean discoverySuccessful = false;
+        if (discoveryEnabled && discovery != null) {
+            discoverySuccessful = discovery.start();
+        }
+
+        Logger.printMessage("Starting up at " + LocalDateTime.now().toString());
+        importFromOldVersion();
+
         try {
             if (!Version.load()) { stop(null); }
         } catch (IOException e) { stop(e); }
@@ -65,7 +79,7 @@ public class Main extends Logger {
 
         // Controllers.
         JettyServletScoreBoardController jetty =
-            new JettyServletScoreBoardController(scoreBoard, jsm, host, port, useMetrics);
+            new JettyServletScoreBoardController(scoreBoard, jsm, host, port, useMetrics, discoverySuccessful ? discoveryName : null);
 
         // Viewers.
         if (useMetrics) { new ScoreBoardMetricsCollector(scoreBoard).register(); }
@@ -93,11 +107,18 @@ public class Main extends Logger {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                // Save any changes since last regular autosave before we shutdown.
+                // Save any changes since last regular autosave before we shut down.
                 autosaver.run();
+                if (discovery != null) {
+                    discovery.stop();
+                }
                 Logger.printMessage("Stopping at " + LocalDateTime.now().toString());
             }
         });
+
+        if (guiFrameText != null) {
+            guiFrameText.setText("ScoreBoard status: running (close this window to exit scoreboard)");
+        }
     }
 
     private void stop(Throwable ex) {
@@ -123,13 +144,11 @@ public class Main extends Logger {
     }
 
     private void parseArgv(String[] argv) {
-        boolean gui = !isTerminalApplication();
-
         for (String arg : argv) {
             if (arg.equals("--gui") || arg.equals("-g")) {
-                gui = true;
+                guiEnabled = true;
             } else if (arg.equals("--nogui") || arg.equals("-G")) {
-                gui = false;
+                guiEnabled = false;
             } else if (arg.startsWith("--port=") || arg.startsWith("-p=")) {
                 port = Integer.parseInt(arg.split("=", 2)[1]);
             } else if (arg.startsWith("--host=") || arg.startsWith("-h=")) {
@@ -138,10 +157,14 @@ public class Main extends Logger {
                 importPath = arg.split("=", 2)[1];
             } else if (arg.equals("--metrics") || arg.equals("-m")) {
                 useMetrics = true;
+            } else if (arg.equals("--discovery") || arg.equals("-d")) {
+                discoveryEnabled = true;
+            } else if (arg.equals("--nodiscovery") || arg.equals("-D")) {
+                discoveryEnabled = false;
+            } else if (arg.startsWith("--discovery-name=") || arg.startsWith("-n=")) {
+                discoveryName = arg.split("=", 2)[1];
             }
         }
-
-        if (gui) { createGui(); }
     }
 
     private static boolean isTerminalApplication() {
@@ -204,7 +227,7 @@ public class Main extends Logger {
                 Logger.printMessage("Skipping import");
                 return;
             }
-        } else if (importPath.equals("")) {
+        } else if (importPath.isEmpty()) {
             Logger.printMessage("Skipping import as per user request");
             return; // user explicitly requested no import
         } else {
@@ -264,9 +287,14 @@ public class Main extends Logger {
 
     private String importPath = null;
 
-    private File logFile = new File(BasePath.get(), "logs/crg.log");
+    private final File logFile = new File(BasePath.get(), "logs/crg.log");
 
     private boolean useMetrics = false;
+
+    private Discovery discovery;
+    private boolean discoveryEnabled = true;
+    private String discoveryName = "scoreboard";
+    private boolean guiEnabled = isTerminalApplication();
 
     private static ScoreBoard scoreBoard;
 }
