@@ -106,13 +106,11 @@ application {
     }
 }
 
-tasks.named<ShadowJar>("shadowJar") {
+tasks.shadowJar {
     archiveClassifier.set("")
     mergeServiceFiles()
-}
 
-tasks.build {
-    dependsOn(tasks.shadowJar)
+    dependsOn(tasks.distTar, tasks.distZip)
 }
 
 tasks.withType<AbstractArchiveTask>().configureEach {
