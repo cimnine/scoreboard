@@ -1,3 +1,6 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jreleaser.model.Active
+import org.jreleaser.model.Stereotype
 import java.util.*
 
 /*
@@ -11,7 +14,10 @@ plugins {
 
     id("com.gradleup.shadow") version "9.0.0-beta15"
     id("com.palantir.git-version") version "3.3.0"
+    id("org.jreleaser") version "1.18.0"
 }
+
+group = "com.carolinarollergirls"
 
 repositories {
     mavenCentral()
@@ -74,13 +80,39 @@ tasks.run<JavaExec> {
     args(listOf("--nogui"))
 }
 
+val gitVersion: groovy.lang.Closure<String> by extra
+version = gitVersion()
+
 application {
     mainClass = "com.carolinarollergirls.scoreboard.Main"
+
+    applicationName = "CRG Scoreboard"
     applicationDefaultJvmArgs = listOf(
         "-Done-jar.silent=true",
         "-Dorg.eclipse.jetty.server.LEVEL=WARN"
     )
-    applicationName = "CRG Scoreboard"
+
+    applicationDistribution.from("html") {
+        include("**/*")
+        exclude("game-data/**/*", "**/.gitignore")
+        into("html")
+        includeEmptyDirs = true
+    }
+    applicationDistribution.from("config") {
+        include("**/*")
+        exclude("**/.gitignore", "autosave/**/*")
+        into("config")
+        includeEmptyDirs = true
+    }
+}
+
+tasks.named<ShadowJar>("shadowJar") {
+    archiveClassifier.set("")
+    mergeServiceFiles()
+}
+
+tasks.build {
+    dependsOn(tasks.shadowJar)
 }
 
 tasks.withType<AbstractArchiveTask>().configureEach {
@@ -88,19 +120,8 @@ tasks.withType<AbstractArchiveTask>().configureEach {
     isReproducibleFileOrder = true
 }
 
-val generatedResources = layout.buildDirectory.dir("generated/resources")
-
-sourceSets {
-    main {
-        resources {
-            srcDir(layout.buildDirectory.dir("generated/resources"))
-        }
-    }
-}
-
 val generateVersionProperties by tasks.registering {
-    dependsOn("processResources")
-
+    val generatedResources = layout.buildDirectory.dir("generated/resources")
     val projectVersion = project.version
     val outputDir = generatedResources.map { it.dir("com/carolinarollergirls/scoreboard/version") }
 
@@ -118,6 +139,72 @@ val generateVersionProperties by tasks.registering {
     }
 }
 
+sourceSets {
+    main {
+        resources {
+            srcDir(generateVersionProperties)
+        }
+    }
+}
+
 tasks.classes {
     dependsOn(generateVersionProperties)
+}
+
+jreleaser {
+    project {
+        name = "CRG Scoreboard"
+        description = "A browser-based scoreboard solution for Roller Derby."
+        longDescription = """
+            |The CRG ScoreBoard is a browser-based scoreboard solution
+            |that also provides overlays for video production
+            |and the ability to track full game data and export it to a WFTDA statsbook.
+            """.trimMargin()
+
+        versionPattern = "CUSTOM"
+
+        inceptionYear = "2008"
+        authors = listOf("Mr Temper", "The CRG developers")
+        copyright = "2008-2012 Mr Temper, since 2012 The CRG developers"
+        license = "Apache-2.0-or-GPL-3.0-or-later"
+
+        links {
+            vcsBrowser = "https://github.com/rollerderby/scoreboard"
+            bugTracker = "https://github.com/rollerderby/scoreboard/issues"
+            documentation = "https://github.com/rollerderby/scoreboard/wiki"
+            homepage = "https://github.com/rollerderby/scoreboard"
+            license = "https://github.com/rollerderby/scoreboard/blob/dev/COPYING"
+        }
+        stereotype = Stereotype.WEB
+    }
+
+    distributions {
+        create("app") {
+            active = Active.ALWAYS
+            distributionType = org.jreleaser.model.Distribution.DistributionType.SINGLE_JAR
+            artifact {
+                // Point to the shadow JAR instead of a ZIP distribution
+                path.set(tasks.shadowJar.flatMap { it.archiveFile })
+            }
+        }
+    }
+}
+
+tasks.startScripts {
+    doLast {
+        // Make the startup script change the working directory to the APP_HOME before launching the application.
+        val unixScript = unixScript
+        val unixScriptText = unixScript.readText()
+        val modifiedUnixScript = unixScriptText.replace(
+            "exec \"\$JAVACMD\" \"$@\"", "cd \"\$APP_HOME\" || exit 1\nexec \"\$JAVACMD\" \"$@\""
+        )
+        unixScript.writeText(modifiedUnixScript)
+
+        val windowsScript = windowsScript
+        val windowsScriptText = windowsScript.readText()
+        val modifiedWindowsScript = windowsScriptText.replace(
+            "\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%", "cd /d \"%APP_HOME%\"\n\"%JAVA_EXE%\" %DEFAULT_JVM_OPTS%"
+        )
+        windowsScript.writeText(modifiedWindowsScript)
+    }
 }
