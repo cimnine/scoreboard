@@ -111,7 +111,7 @@ public class JettyServletScoreBoardController {
         Logger.printMessage("Open a web browser (either Google Chrome or Mozilla Firefox recommended) to:");
         Logger.printMessage("	http://" + (host != null ? host : "localhost") + ":" + port);
         try {
-            Iterator<String> urls = urlsServlet.getUrls().iterator();
+            Iterator<String> urls = urlsServlet.getUrls(false).iterator();
             if (urls.hasNext()) { Logger.printMessage("or try one of these URLs:"); }
             while (urls.hasNext()) { Logger.printMessage("	" + urls.next()); }
         } catch (MalformedURLException muE) {
