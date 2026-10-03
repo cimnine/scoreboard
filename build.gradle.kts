@@ -105,6 +105,11 @@ application {
         into("html")
         includeEmptyDirs = true
     }
+    // Bundle the shipped theme entry while keeping uploaded custom themes excluded.
+    applicationDistribution.from("html/themes/custom") {
+        include("Halloween.js")
+        into("html/themes/custom")
+    }
     applicationDistribution.from("config") {
         include("**/*")
         exclude("**/.gitignore", "autosave/**/*")
