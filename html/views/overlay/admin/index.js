@@ -3,6 +3,14 @@ var currrentPanel = '';
 
 (function () {
   $('#PanelSelect').val('');
+  // Embedded previews must use the same theme as the admin page.
+  var theme = _getUrlParam('theme');
+  if (theme) {
+    var preview = $('#Preview>iframe');
+    var url = new URL(preview.attr('src'), window.location.href);
+    url.searchParams.set('theme', theme);
+    preview.attr('src', url.href);
+  }
   $('#Preview>iframe').css('width', $('#PreviewSize [dim="width"]').val()).css('height', $('#PreviewSize [dim="height"]').val())
 })();
 
