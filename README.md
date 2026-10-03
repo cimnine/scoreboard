@@ -57,3 +57,31 @@ Assuming that your scoreboard computer is set up with a monitor/laptop screen as
 When the control panel displays, it will ask you for an operator name. Enter your name and click Login. This operator name is used to store your personalized settings such as key controls.
 
 Now you can go to the tab with the documentation and either go to the Quick Start Guide or dive in deep right away and proceed with the section on the Controls page.
+
+
+## Development with Gradle
+
+Use Java SDK 11 or newer to run the wrapper. Gradle uses a Java 11 toolchain
+and can download it automatically. No system Gradle installation is needed.
+
+```shell
+./gradlew run        # start the server without the GUI from the project root
+./gradlew build      # compile, test, and package
+./gradlew classes    # compile production sources only
+./gradlew installDist # create a runnable distribution under build/install/
+```
+
+Import the repository as a Gradle project in your IDE. Production Java sources
+stay in `src/`, tests stay in `tests/`, and classpath properties files stay beside
+the sources in `src/`. Explicit source sets preserve this layout; generated
+version properties and build outputs are written only under `build/`.
+
+Application distributions include the existing `html/` and `config/` directories
+and Gradle-generated launchers in `bin/`. The launchers change to the distribution
+root before starting the server. ZIP and TAR distributions are in
+`build/distributions/`; a standalone executable JAR is in `build/libs/` and needs
+`html/` and `config/` beside its working directory.
+
+Ant and its checked-in dependencies remain available during the transition.
+Gradle resolves dependencies from Maven Central, using the same dependency
+versions as the current Ant build. The Gradle runtime requires Java 11.

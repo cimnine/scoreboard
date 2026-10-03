@@ -31,3 +31,8 @@ spotbugs-report.xml
 html/images/old-sponsor_banner
 build-ant/
 build-vscode/
+
+# Gradle outputs and local IDE configuration
+/build/
+/.gradle/
+/.idea/
