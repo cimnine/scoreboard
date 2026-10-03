@@ -85,3 +85,9 @@ root before starting the server. ZIP and TAR distributions are in
 Ant and its checked-in dependencies remain available during the transition.
 Gradle resolves dependencies from Maven Central, using the same dependency
 versions as the current Ant build. The Gradle runtime requires Java 11.
+
+Gradle generates the same version metadata fields as Ant: `release`,
+`release.commit`, `release.user`, `release.time`, and `release.host`. Development
+builds append a timestamp to the Git description; use `-PisRelease=true` when
+building a release to omit that suffix. The executable JAR keeps one entry per
+path, merges service registrations, and combines dependency license notices.

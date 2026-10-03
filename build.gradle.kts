@@ -1,6 +1,11 @@
 import org.jreleaser.model.Active
 import org.jreleaser.model.Stereotype
 import java.util.*
+import java.util.zip.ZipFile
+import java.net.InetAddress
+import java.net.UnknownHostException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 /*
  * For more details on building Java & JVM projects, please refer to https://docs.gradle.org/8.14.1/userguide/building_java_projects.html in the Gradle documentation.
@@ -110,13 +115,36 @@ tasks.jar {
 
 tasks.shadowJar {
     archiveClassifier.set("")
+    // Keep the first copy of ordinary resources/classes, including our Jetty MIME override.
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     mergeServiceFiles()
-    // The project overrides Jetty's MIME mappings; retain that entry exactly once.
-    filesMatching("org/eclipse/jetty/http/mime.properties") {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    filesMatching("META-INF/services/**") {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+    // Combine dependency license/notice texts instead of dropping all but the first.
+    val legalResources = listOf("META-INF/LICENSE", "META-INF/LICENSE.txt", "META-INF/NOTICE", "META-INF/NOTICE.txt")
+    legalResources.forEach { append(it) }
+    filesMatching(legalResources) {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 
     dependsOn(tasks.distTar, tasks.distZip)
+}
+
+val verifyShadowJar by tasks.registering {
+    val executableJar = tasks.shadowJar.flatMap { it.archiveFile }
+    inputs.file(executableJar)
+    doLast {
+        ZipFile(executableJar.get().asFile).use { jar ->
+            val duplicates = jar.entries().asSequence().groupingBy { it.name }.eachCount()
+                .filterValues { it > 1 }.keys
+            check(duplicates.isEmpty()) { "Duplicate executable JAR entries: $duplicates" }
+        }
+    }
+}
+
+tasks.check {
+    dependsOn(verifyShadowJar)
 }
 
 tasks.withType<AbstractArchiveTask>().configureEach {
@@ -126,20 +154,42 @@ tasks.withType<AbstractArchiveTask>().configureEach {
 
 val generateVersionProperties by tasks.registering {
     val generatedResources = layout.buildDirectory.dir("generated/resources")
-    val projectVersion = project.version
     val outputDir = generatedResources.map { it.dir("com/carolinarollergirls/scoreboard/version") }
+    val releaseVersion = providers.exec {
+        commandLine("git", "describe", "--tags", "--always", "--dirty")
+    }.standardOutput.asText.map { it.trim() }
+    val releaseCommit = providers.exec {
+        commandLine("git", "rev-parse", "HEAD")
+    }.standardOutput.asText.map { it.trim() }
 
-    inputs.property("version", projectVersion)
+    inputs.property("release", releaseVersion)
+    inputs.property("release.commit", releaseCommit)
+    inputs.property("release.user", System.getProperty("user.name"))
+    inputs.property("release.host", providers.provider {
+        try {
+            InetAddress.getLocalHost().hostName
+        } catch (_: UnknownHostException) {
+            "localhost"
+        }
+    })
+    inputs.property("isRelease", providers.gradleProperty("isRelease").map { it.toBoolean() }.orElse(false))
     outputs.dir(generatedResources)
+    // Like Ant, refresh the build timestamp for each invocation.
+    outputs.upToDateWhen { false }
 
     doLast {
+        val timestamp = LocalDateTime.now()
+            .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
         val propertiesFile = outputDir.get().file("release.properties").asFile
         propertiesFile.parentFile.mkdirs()
-        propertiesFile.writer().use { writer ->
-            val properties = Properties()
-            properties["release"] = inputs.properties["version"].toString()
-            properties.store(writer, null)
-        }
+        val properties = Properties()
+        val release = inputs.properties["release"].toString()
+        properties["release"] = if (inputs.properties["isRelease"] == true) release else "$release-$timestamp"
+        properties["release.commit"] = inputs.properties["release.commit"].toString()
+        properties["release.user"] = inputs.properties["release.user"].toString()
+        properties["release.host"] = inputs.properties["release.host"].toString()
+        properties["release.time"] = timestamp
+        propertiesFile.writer().use { properties.store(it, null) }
     }
 }
 
