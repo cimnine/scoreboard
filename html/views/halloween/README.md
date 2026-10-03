@@ -45,7 +45,10 @@ Paste this into the browser source's **Custom CSS**:
 }
 ```
 
-Remove the motion line, or set it to `running`, to enable motion. `paused` stops every decorative animation, including bat eyes, pumpkin eyes, and ghost opacity. Live game clocks and sponsor rotation continue to work. The theme also respects the browser's reduced-motion preference.
+Remove the motion line, or set it to `running`, to enable motion. `paused` stops every decorative animation, including bat eyes, pumpkin eyes, and ghost opacity. Admin-controlled broadcast panels fade and slide in or out over 350 milliseconds.
+Setting `--haunted-motion: paused` makes those visibility changes immediate.
+Use `--haunted-transition-duration` to adjust their duration independently.
+Live game clocks and sponsor rotation continue to work. The theme also respects the browser's reduced-motion preference.
 
 The background variable controls the entire page canvas, including the full scoreboard and intermission. Panel translucency remains intact. For venue use, leave the default background and use `?venue=true` for solid panels. You can also edit `theme.css` directly. To change panel translucency separately:
 
@@ -76,3 +79,8 @@ Verified native theme discovery, selection, and routing of the main scoreboard a
 ## Auxiliary displays
 
 Choose Halloween in the menu before opening Roster, Penalty Whiteboard, or Penalty Clocks. These retain their native live data and configured team identity. Numbers and clocks use large type, with bats, pumpkins and webs confined to header margins. Serving/unserved colors, foul-out warnings, and SIT/STAND/DONE states retain their meaning. Long rosters remain scrollable; no skaters or officials are dropped to fit the viewport. Shared operator components are not themed. The same background/motion CSS variables work here.
+
+The broadcast retains the concept’s separate name, score, and center-clock panels.
+Its native live bindings and Overlay Admin controls remain active.
+Optional jammer and lineup strips sit above the scorebar.
+The home sponsor sits above those strips and moves down when they are hidden.

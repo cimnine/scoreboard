@@ -1,56 +1,99 @@
 /* SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later */
-/* Theme the native overlay so every Overlay.Interactive setting remains live. */
 :root.haunted-overlay {
   --haunted-background: transparent;
   --haunted-motion: running;
+  --haunted-transition-duration: 350ms;
   --haunted-panel: linear-gradient(135deg, #2a1019d9, #100b10b8);
   --haunted-blood: #d52b39;
   --haunted-text: #fff4e6;
+  --haunted-scale: 1;
 }
 html.haunted-overlay, .haunted-overlay body { background: var(--haunted-background) !important; }
 .haunted-overlay body { font-family: Arial, Helvetica, sans-serif; color: var(--haunted-text); }
-.haunted-overlay .barBackgroundTop,
-.haunted-overlay .barBackgroundBottom,
-.haunted-overlay .TeamBox .barBackground,
-.haunted-overlay .ClockBarMiddle,
-.haunted-overlay .OverlayPanel h1,
-.haunted-overlay .OverlayPanel h2,
-.haunted-overlay .OverlayPanel h4,
-.haunted-overlay .OverlayPanel h5,
-.haunted-overlay .PPJContainer {
+.haunted-overlay .haunted-scorebar {
+  position: absolute; left: 7%; right: 7%; bottom: 9%; height: 7vw;
+  display: grid; grid-template-columns: 26fr 11fr 22fr 11fr 26fr; gap: .6vw;
+  transform: scale(var(--haunted-scale)); transform-origin: bottom center; overflow: visible;
+}
+.haunted-overlay .TeamBox.AnimatedPanel,
+.haunted-overlay .TeamBox > [Team],
+.haunted-overlay .TeamBox .Team { display: contents; }
+
+.haunted-overlay .TeamBox .SmallIndicator { display: none; }
+.haunted-overlay .haunted-name-panel,
+.haunted-overlay .TeamBox .Team > .Score,
+.haunted-overlay .haunted-clock-card {
   background: var(--haunted-panel); color: var(--haunted-text); border-top: 3px solid var(--haunted-blood);
+  border-radius: .4vw; box-sizing: border-box; min-width: 0; overflow: visible;
 }
-/* Preserve native Show/Hide transforms, with a compact row near the bottom. */
-.haunted-overlay .TeamBox.AnimatedPanel {
-  top: auto; bottom: 6%; left: 7%; width: 62%; max-width: none;
-  display: flex; gap: .5em; overflow: visible; font-size: 2em;
-}
-.haunted-overlay .TeamBox.PanelHideTop { transform: translateY(350%); }
-.haunted-overlay .TeamBox.PanelHideTop.Show { transform: translateY(0); }
-.haunted-overlay .TeamBox > [Team] { flex: 1; min-width: 0; position: relative; overflow: visible; }
-.haunted-overlay .TeamBox .Team { width: calc(100% - 1.6em); border: 0; border-radius: .2em; }
-.haunted-overlay .TeamBox.Lineups.UseLT .Team { width: 100%; }
-.haunted-overlay .TeamBox .Team .Name { padding: .4em .3em; width: 60%; font-size: .75em; white-space: normal; overflow-wrap: anywhere; line-height: 1.1; min-height: 3.2em; box-sizing: border-box; border: 0; }
-.haunted-overlay .TeamBox .Team .Score { width: 25%; padding: .2em .1em; font-size: 1.25em; box-sizing: border-box; }
-.haunted-overlay .TeamBox .Team .Mini { width: 10%; padding-top: .6em; }
-.haunted-overlay .TeamBox .Indicator { height: auto; min-height: 2.5em; background: #581827; color: var(--haunted-text); }
-.haunted-overlay .TeamBox .Team .Dot { background: #ff8a24; }
-.haunted-overlay .TeamBox .JammerBox { background: var(--haunted-panel); color: var(--haunted-text); padding: .2em; position: relative; z-index: 0; box-sizing: border-box; width: 100%; }
-.haunted-overlay .ClockBox.TopClock { top: auto; bottom: 6%; right: 7%; width: 22%; }
-.haunted-overlay .ClockBox.PanelHideTop { transform: translateY(350%); }
-.haunted-overlay .ClockBox.PanelHideTop.Show { transform: translateY(0); }
-.haunted-overlay .ClockBarTop, .haunted-overlay .BottomRow { box-sizing: border-box; }
-.haunted-overlay .ClockBarTop { font-size: 1.5em; }
-.haunted-overlay .ClockBarBottom { font-size: 2.4em; font-variant-numeric: tabular-nums; }
-.haunted-overlay .TeamBox .haunted-sponsor { position: absolute; left: 0; bottom: calc(100% + .5em); width: 100%; height: 1.7em; background: white; border-radius: 3px; }
-.haunted-overlay .TeamBox .haunted-sponsor img { display: block; height: 100%; width: 100%; object-fit: contain; transition: none; }
+.haunted-overlay .haunted-name-panel { grid-column: 1; grid-row: 1; position: relative; padding: .8vw 1vw; }
+.haunted-overlay [Team="2"] .haunted-name-panel { grid-column: 5; text-align: right; }
+.haunted-overlay .haunted-team-label { font-size: .9vw; line-height: 1; margin-bottom: .3vw; }
+.haunted-overlay .TeamBox .Team .Name { float: none; border: 0; padding: 0; width: 100%; height: 4vw; font-size: 1.8vw; font-weight: bold; line-height: 1.1; white-space: normal; overflow-wrap: anywhere; }
+.haunted-overlay .TeamBox .Team > .Score { grid-column: 2; grid-row: 1; float: none; width: auto; padding: 0; font-size: 4.7vw; font-weight: bold; display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
+.haunted-overlay .TeamBox [Team="2"] .Team > .Score { grid-column: 4; }
+.haunted-overlay .haunted-indicators { position: absolute; top: calc(100% + .4vw); left: 0; display: flex; align-items: center; gap: .5vw; padding: .3vw .6vw; background: var(--haunted-panel); border-radius: .2vw; }
+.haunted-overlay [Team="2"] .haunted-indicators { left: auto; right: 0; }
+.haunted-overlay .TeamBox .Indicator { float: none; font-size: .95vw; width: auto; height: auto; background: none; color: #ffb75c; border-radius: 0; }
+.haunted-overlay .TeamBox .Indicator .Clock { float: none; margin: 0; display: none; }
+.haunted-overlay .TeamBox .Indicator .Clock.Show:not(:empty) { display: block; border: 2px solid #ff8a24; padding: .15vw .3vw; }
+.haunted-overlay .TeamBox .Team .DotTimeouts { width: auto; padding: 0; float: none; display: flex; gap: .5vw; align-items: center; }
+.haunted-overlay .TeamBox .Team .Dot { width: .8vw; height: .8vw; margin: 0; background: #ff8a24; box-sizing: border-box; }
+.haunted-overlay .TeamBox .Team .Dot.Used { opacity: 1; background: transparent; border: 2px solid #c4a8ad; }
+.haunted-overlay .TeamBox .Team .Dot.OfficialReview1 { border-radius: .15vw; width: 1.8vw; height: 1.5vw; background: transparent; border: 1px solid #e5d3d4; font-size: .85vw; text-align: center; }
+.haunted-overlay .TeamBox .Team .Dot.OfficialReview1::before { content: 'OR'; }
+.haunted-overlay .TeamBox .Team .Dot.OfficialReview1.Retained { border-color: #ffb75c; color: #ffb75c; }
+.haunted-overlay .TeamBox .Team .Mini { width: auto; font-size: .8vw; padding: 0; }
+.haunted-overlay .TeamBox .Team .Mini .JamScore::before { content: '+'; }
+.haunted-overlay .haunted-team-extras { position: absolute; left: 0; right: 0; bottom: calc(100% + .6vw); display: flex; flex-direction: column; }
+.haunted-overlay .TeamBox .JammerWrapper { position: relative; overflow: hidden; }
+.haunted-overlay .TeamBox .JammerBox { width: 100%; padding: .3vw; box-sizing: border-box; position: relative; z-index: 0; background: var(--haunted-panel); font-size: 1.1vw; }
+.haunted-overlay .TeamBox.Lineups.UseLT .JammerBox > div { flex-direction: column; align-items: center; min-width: 0; white-space: normal; }
+.haunted-overlay .TeamBox.Lineups.UseLT .JammerBox .Name { font-size: 1vw; height: auto; white-space: normal; max-width: 100%; }
+.haunted-overlay .ClockBox.TopClock.AnimatedPanel { grid-column: 3; grid-row: 1; position: relative; inset: auto; width: auto; border-radius: 0; transform: none; display: grid; grid-template-columns: 1fr 1fr; gap: .5vw; overflow: visible; }
+
+.haunted-overlay .ClockBox > .ClockBarTop,
+.haunted-overlay .ClockBox > .ClockBarMiddle,
+.haunted-overlay .ClockBox > .ClockBarBottom { display: none; }
+.haunted-overlay .haunted-clock-card { position: relative; text-align: center; padding: .9vw .6vw; }
+.haunted-overlay .haunted-clock-card .Name,
+.haunted-overlay .haunted-clock-card .ClockDescription { font-size: .9vw; font-weight: bold; float: none; width: 100%; max-height: none; padding: 0; background: transparent !important; line-height: 1.15; }
+.haunted-overlay .haunted-clock-card .ClockDescription:not(.Show) { display: none; }
+.haunted-overlay .haunted-clock-card .Clock { margin: 0; float: none; }
+.haunted-overlay .haunted-clock-card .Clock:not(.Show) { display: none; }
+.haunted-overlay .haunted-clock-card .Time { position: absolute; left: 0; right: 0; top: 2.5vw; width: 100%; text-align: center !important; font-size: 2.4vw; font-variant-numeric: tabular-nums; }
+.haunted-overlay .TeamBox.AnimatedPanel .haunted-sponsor { position: relative; width: 100%; height: 2.8vw; flex: none; background: white; border-radius: 3px; }
+.haunted-overlay .TeamBox.AnimatedPanel .haunted-sponsor img { display: block; height: 100%; width: 100%; object-fit: contain; transition: none; }
 .haunted-overlay [hidden] { display: none !important; }
-.haunted-overlay .TeamBox .haunted-decoration { position: absolute; height: 1em; width: 1em; pointer-events: none; transition: none; }
-.haunted-overlay .TeamBox .haunted-pumpkin { left: -1.2em; bottom: 0; animation: haunted-overlay-ember 10s ease-in-out infinite; }
-.haunted-overlay .TeamBox .haunted-bat { right: 0; bottom: calc(100% + 2.6em); width: 1.4em; animation: haunted-overlay-bat 11s ease-in-out infinite; }
-.haunted-overlay .TeamBox > [Team="2"] .haunted-pumpkin { left: auto; right: -1.2em; }
-.haunted-overlay .TeamBox > [Team="2"] .haunted-bat { animation-delay: -5s; }
-.haunted-overlay .TeamBox .haunted-decoration { animation-play-state: var(--haunted-motion) !important; }
+.haunted-overlay .haunted-art-layer { position: absolute; inset: 0; pointer-events: none; }
+.haunted-overlay .haunted-art-layer .web { position: absolute; top: 0; left: 0; width: 11vw; height: 11vw; color: #dbc9cc80; }
+.haunted-overlay .haunted-art-layer .bat { position: absolute; color: #b23a49; animation: haunted-bat-drift 9s ease-in-out infinite; }
+.haunted-overlay .broadcast-left-bat { left: 2%; bottom: 13%; width: 3.5vw; height: 1.75vw; transform: rotate(-15deg); }
+.haunted-overlay .broadcast-bat { right: 2%; bottom: 11%; width: 4vw; height: 2vw; transform: rotate(12deg); }
+.haunted-overlay .broadcast-bat.satellite { width: 2.5vw; height: 1.25vw; }
+.haunted-overlay .broadcast-bat.satellite.left { right: 4%; bottom: 16%; transform: rotate(-8deg); animation-delay: -3s; }
+.haunted-overlay .broadcast-bat.satellite.right { right: 1.5%; bottom: 20%; transform: rotate(20deg); animation-delay: -6s; }
+.haunted-overlay .haunted-art-layer .pumpkin { position: absolute; width: 3vw; height: 3vw; left: 3%; bottom: 7%; animation: haunted-pumpkin-ember 10s ease-in-out infinite; }
+.haunted-overlay .haunted-art-layer .pumpkin.right { left: auto; right: 3%; animation-delay: -5s; }
+.haunted-overlay .haunted-art-layer .ghost { position: absolute; right: 6%; bottom: 23%; width: 3vw; height: 3vw; color: var(--haunted-text); animation: haunted-ghost-pulse 8s ease-in-out infinite; }
+.haunted-overlay .bat-eyes { stroke: #ffde8c; opacity: .3; animation: haunted-bat-eyes 19s linear infinite; }
+.haunted-overlay .satellite.left .bat-eyes { animation-delay: -6s; }
+.haunted-overlay .satellite.right .bat-eyes { animation-delay: -13s; }
+.haunted-overlay .pumpkin-eyes { fill: #ffe98c; animation: haunted-pumpkin-eyes 7s ease-in-out infinite; }
+.haunted-overlay .pumpkin.right .pumpkin-eyes { animation-delay: -3.5s; }
+.haunted-overlay .haunted-art-layer .bat,
+.haunted-overlay .haunted-art-layer .pumpkin,
+.haunted-overlay .haunted-art-layer .ghost,
+.haunted-overlay .bat-eyes,
+.haunted-overlay .pumpkin-eyes { animation-play-state: var(--haunted-motion) !important; }
+@keyframes haunted-bat-drift { 50% { translate: .2vw -.35vw; } }
+@keyframes haunted-pumpkin-ember { 50% { filter: drop-shadow(0 0 .3vw #ff8a2445); } }
+@keyframes haunted-ghost-pulse { 0%, 100% { opacity: .5; } 50% { opacity: .95; } }
+@keyframes haunted-bat-eyes { 0%, 72%, 79%, 100% { opacity: .3; } 73%, 75%, 77% { opacity: 1; stroke: #ff4051; } 74%, 76%, 78% { opacity: .1; } }
+@keyframes haunted-pumpkin-eyes { 0%, 100% { fill: #ffe98c; filter: drop-shadow(0 0 3px #ffd05f); } 50% { fill: #ff263f; filter: drop-shadow(0 0 4px #f9163f); } }
+@media (prefers-reduced-motion: reduce) {
+  .haunted-overlay .haunted-art-layer *, .haunted-overlay .bat-eyes, .haunted-overlay .pumpkin-eyes { animation: none !important; }
+}
 .haunted-overlay .OverlayPanel h1 { background-image: url('web.svg'), var(--haunted-panel); background-repeat: no-repeat; background-size: 3em, auto; }
 .haunted-overlay .RosterTeam .Team .Skater,
 .haunted-overlay .PenaltyTeam .Team .Skater { background: #29131ed9; color: var(--haunted-text); }
@@ -59,28 +102,84 @@ html.haunted-overlay, .haunted-overlay body { background: var(--haunted-backgrou
 .haunted-overlay .Points { color: var(--haunted-text); }
 .haunted-overlay .RosterTeam .Team .Skater .Number { background: #581827; }
 .haunted-overlay .AnimatedPanel .TeamLogo { object-fit: contain; }
-@keyframes haunted-overlay-ember { 50% { filter: drop-shadow(0 0 4px #ff263f80); } }
-@keyframes haunted-overlay-bat { 50% { translate: 0 -.12em; rotate: -4deg; } }
-@media (prefers-reduced-motion: reduce) {
-  .haunted-overlay .TeamBox .haunted-decoration { animation: none !important; }
-}
 
-.haunted-overlay .haunted-bat { color: #b23a49; }
-.haunted-overlay .haunted-bat .bat-eyes { stroke: #ffde8c; opacity: .3; animation: haunted-bat-eyes 19s linear infinite; }
-.haunted-overlay .haunted-pumpkin .pumpkin-eyes { fill: #ffe98c; animation: haunted-pumpkin-eyes 7s ease-in-out infinite; }
-.haunted-overlay .haunted-decoration .bat-eyes,
-.haunted-overlay .haunted-decoration .pumpkin-eyes { animation-play-state: var(--haunted-motion) !important; }
-@keyframes haunted-bat-eyes { 0%, 72%, 79%, 100% { opacity: .3; } 73%, 75%, 77% { opacity: 1; stroke: #ff4051; } 74%, 76%, 78% { opacity: .1; } }
-@keyframes haunted-pumpkin-eyes { 0%, 100% { fill: #ffe98c; } 50% { fill: #ff263f; } }
-@media (prefers-reduced-motion: reduce) {
-  .haunted-overlay .haunted-decoration .bat-eyes,
-  .haunted-overlay .haunted-decoration .pumpkin-eyes { animation: none !important; }
-}
-/* Clear the floated name/score row before the native lineup strip. */
-.haunted-overlay .TeamBox .JammerWrapper { clear: both; width: 100%; }
-.haunted-overlay .TeamBox.Lineups.UseLT .JammerBox > div { flex-direction: column; align-items: center; min-width: 0; white-space: normal; }
-.haunted-overlay .TeamBox.Lineups.UseLT .JammerBox .Name { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
-.haunted-overlay .TeamBox.AnimatedPanel .haunted-sponsor img { width: 100%; height: 100%; object-fit: contain; }
-/* Keep lower thirds clear of the bottom score/lineup panels. */
+.haunted-overlay .OverlayPanel h1,
+.haunted-overlay .OverlayPanel h2,
+.haunted-overlay .OverlayPanel h4,
+.haunted-overlay .OverlayPanel h5,
+.haunted-overlay .PPJContainer { background-color: #201119d9; color: var(--haunted-text); border-top: 3px solid var(--haunted-blood); }
 .haunted-overlay .LowerThird.AnimatedPanel { top: 55%; left: 7%; }
 .haunted-overlay .LowerThird.PanelHideSide.Show { transform: translateX(0); }
+.haunted-overlay .PanelWrapperTop .ClockBox.TopClock.AnimatedPanel { transform: none; }
+.haunted-overlay .ClockBox .haunted-clock-card .Time { width: 100%; text-align: center !important; }
+.haunted-overlay .ClockBox.Wrapper .haunted-clock-card .Name { width: 100%; text-align: center !important; }
+.haunted-overlay .haunted-indicators { line-height: 1; }
+.haunted-overlay .TeamBox .Team .Dot.OfficialReview1 { line-height: 1.5vw; }
+
+.haunted-overlay .TeamBox .JammerWrapper .Name { height: auto; font-size: 1.1vw; line-height: 1.15; }
+.haunted-overlay .TeamBox .haunted-name-panel > .Name { text-transform: uppercase; }
+.haunted-overlay [Team="2"] .haunted-name-panel > .Name { text-align: right; }
+.haunted-overlay .ClockBox .haunted-clock-card .ClockDescription { white-space: normal; }
+.haunted-overlay .ClockBox .haunted-clock-card .ClockDescription.Five { background: yellow !important; color: #000; }
+.haunted-overlay .haunted-period-clock:not(:has(.Time.Show)) { visibility: hidden; }
+.haunted-overlay .haunted-active-clock:has(.ClockDescription.Show) > .Name { display: none; }
+.haunted-overlay .haunted-team-label { font-weight: 400; letter-spacing: .16vw; }
+.haunted-overlay .TeamBox .haunted-name-panel > .Name { font-weight: 800; letter-spacing: -.04vw; }
+.haunted-overlay .TeamBox .Team > .Score { font-weight: 800; letter-spacing: -.15vw; }
+.haunted-overlay .haunted-art-layer .ghost { bottom: calc(9% + 7.9vw); }
+
+.haunted-overlay .haunted-name-panel,
+.haunted-overlay .TeamBox .Team > .Score,
+.haunted-overlay .haunted-clock-card,
+.haunted-overlay .haunted-art-layer,
+.haunted-overlay .TeamBox .JammerWrapper,
+.haunted-overlay .OverlayPanel.AnimatedPanel {
+  opacity: 0; visibility: hidden; pointer-events: none; translate: 0 1.2vw;
+  transition: opacity var(--haunted-transition-duration) ease,
+    translate var(--haunted-transition-duration) ease,
+    visibility 0s linear var(--haunted-transition-duration);
+}
+.haunted-overlay .TeamBox.Show .haunted-name-panel,
+.haunted-overlay .TeamBox.Show .Team > .Score,
+.haunted-overlay .ClockBox.Show .haunted-clock-card,
+.haunted-overlay .haunted-art-layer.Show,
+.haunted-overlay .TeamBox.InJam.ShowJammers .JammerWrapper,
+.haunted-overlay .TeamBox.Lineups.UseLT .JammerWrapper,
+.haunted-overlay .OverlayPanel.AnimatedPanel.Show {
+  opacity: 1; visibility: visible; translate: 0 0; pointer-events: auto;
+  transition-delay: 0s;
+}
+.haunted-overlay .haunted-art-layer { translate: none; }
+.haunted-overlay .haunted-art-layer.Show { pointer-events: none; }
+.haunted-overlay .TeamBox .JammerWrapper { translate: 0 .6vw; }
+.haunted-overlay .TeamBox .JammerBox,
+.haunted-overlay .TeamBox.ShowJammers .JammerBox.Show,
+.haunted-overlay .TeamBox.Lineups.UseLT.PenaltyClocks .JammerBox { margin-left: 0; z-index: 0; transition: none; }
+.haunted-overlay .PanelWrapperCenter .OverlayPanel.PanelHideSide { transform: translateX(-50%); translate: -2vw 0; }
+.haunted-overlay .PanelWrapperCenter [Team="2"] .OverlayPanel.PanelHideSide { translate: 2vw 0; }
+.haunted-overlay .PanelWrapperCenter .OverlayPanel.PanelHideSide.Show { translate: 0 0; }
+.haunted-overlay .PanelWrapperLeft .LowerThird.PanelHideSide { transform: none; translate: -2vw 0; }
+.haunted-overlay .PanelWrapperLeft .LowerThird.PanelHideSide.Show { translate: 0 0; }
+.haunted-overlay .OverlayPanel.AnimatedPanel img { height: 164px; transition: none; }
+.haunted-overlay .OverlayPanel.AnimatedPanel.Upcoming img { height: 200px; }
+.haunted-overlay.haunted-motion-paused { --haunted-transition-duration: 0s !important; }
+@media (prefers-reduced-motion: reduce) {
+  :root.haunted-overlay { --haunted-transition-duration: 0s !important; }
+}
+
+.haunted-overlay .TeamBox:not(.Show) .JammerWrapper {
+  opacity: 0; visibility: hidden; pointer-events: none; translate: 0 .6vw;
+  transition-delay: 0s, 0s, var(--haunted-transition-duration);
+}
+
+.haunted-overlay .TeamBox .JammerWrapper {
+  max-height: 0; margin-top: 0;
+  transition: opacity var(--haunted-transition-duration) ease,
+    translate var(--haunted-transition-duration) ease,
+    max-height var(--haunted-transition-duration) ease,
+    margin-top var(--haunted-transition-duration) ease,
+    visibility 0s linear var(--haunted-transition-duration);
+}
+.haunted-overlay .TeamBox.InJam.ShowJammers .JammerWrapper,
+.haunted-overlay .TeamBox.Lineups.UseLT .JammerWrapper { max-height: 12vw; margin-top: .6vw; transition-delay: 0s; }
+.haunted-overlay .TeamBox:not(.Show) .JammerWrapper { transition-delay: 0s, 0s, 0s, 0s, var(--haunted-transition-duration); }
