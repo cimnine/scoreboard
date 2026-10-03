@@ -1,5 +1,8 @@
 import org.jreleaser.model.Active
 import org.jreleaser.model.Stereotype
+import org.jreleaser.gradle.plugin.tasks.AbstractJReleaserTask
+import org.jreleaser.gradle.plugin.tasks.JReleaserPrepareTask
+import org.jreleaser.gradle.plugin.tasks.JReleaserPackageTask
 import java.util.*
 import java.util.zip.ZipFile
 import java.net.InetAddress
@@ -61,6 +64,8 @@ dependencies {
     implementation("io.prometheus:simpleclient_hotspot:0.14.1")
     implementation("io.prometheus:simpleclient_servlet:0.14.1")
     implementation("io.prometheus:simpleclient_servlet_common:0.14.1")
+
+    implementation("org.jmdns:jmdns:3.6.1")
 
     compileOnly("javax.servlet:javax.servlet-api:3.1.0")
 
@@ -257,7 +262,31 @@ val installerVersion = providers.gradleProperty("installerVersion").orElse(
     }
 )
 
+
+val containerDistZip by tasks.registering(Zip::class) {
+    dependsOn(tasks.installDist)
+    archiveFileName.set("scoreboard-container.zip")
+    destinationDirectory.set(layout.buildDirectory.dir("distributions"))
+    from(tasks.installDist.map { it.destinationDir }) {
+        into("scoreboard")
+    }
+}
+
+val localContainerBuild = gradle.startParameter.taskNames.any {
+    it.substringAfterLast(':') in setOf("prepareContainer", "buildContainer", "jreleaserPrepare", "jreleaserPackage")
+}
+
 jreleaser {
+    if (localContainerBuild) {
+        release {
+            generic {
+                enabled.set(true)
+                token.set("local-only")
+                skipTag.set(true)
+                skipRelease.set(true)
+            }
+        }
+    }
     project {
         name = "CRG Scoreboard"
         description = "A browser-based scoreboard solution for Roller Derby."
@@ -363,6 +392,7 @@ jreleaser {
 
     release {
         github {
+            enabled.set(!localContainerBuild)
             tagName = "{{projectVersion}}"
         }
     }
@@ -376,7 +406,64 @@ jreleaser {
                 path.set(tasks.shadowJar.flatMap { it.archiveFile })
             }
         }
+        create("container") {
+            active = if (providers.gradleProperty("nativeRelease").isPresent) Active.NEVER else Active.ALWAYS
+            distributionType = org.jreleaser.model.Distribution.DistributionType.JAVA_BINARY
+            executable { name.set("CRG Scoreboard") }
+            java { version.set("17") }
+            artifact {
+                path.set(containerDistZip.flatMap { it.archiveFile })
+                extraProperties.put("artifactRootEntryName", "scoreboard")
+            }
+            docker {
+                active = Active.ALWAYS
+                useLocalArtifact.set(true)
+                downloadUrl.set(layout.buildDirectory.file("distributions/scoreboard-container.zip").map { it.asFile.toURI().toString() })
+                baseImage.set("eclipse-temurin:17-jre-jammy")
+                templateDirectory.set(layout.projectDirectory.dir("jreleaser/container"))
+                setCommand(providers.gradleProperty("containerRuntime").orElse("podman").get())
+                imageName("scoreboard:latest")
+                registries {
+                    create("local") {
+                        server.set("localhost")
+                        repositoryName.set("crg")
+                        externalLogin.set(true)
+                    }
+                }
+                repository { active = Active.NEVER }
+            }
+        }
     }
+}
+
+tasks.withType<AbstractJReleaserTask>().configureEach {
+    outputDirectory.set(layout.buildDirectory.dir("jreleaser"))
+}
+
+tasks.named<JReleaserPrepareTask>("jreleaserPrepare") {
+    dependsOn(containerDistZip)
+    outputs.upToDateWhen { false }
+    distributions.set(listOf("container"))
+    packagers.set(listOf("docker"))
+}
+
+tasks.named<JReleaserPackageTask>("jreleaserPackage") {
+    dependsOn(containerDistZip)
+    outputs.upToDateWhen { false }
+    distributions.set(listOf("container"))
+    packagers.set(listOf("docker"))
+}
+
+tasks.register("prepareContainer") {
+    group = "distribution"
+    description = "Prepare the container build context using JReleaser."
+    dependsOn("jreleaserPrepare")
+}
+
+tasks.register("buildContainer") {
+    group = "distribution"
+    description = "Build a local container image using JReleaser (no publishing)."
+    dependsOn("jreleaserPackage")
 }
 
 tasks.startScripts {

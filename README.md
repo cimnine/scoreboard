@@ -118,3 +118,40 @@ Pushing a numeric version tag such as `v2027.1` runs the release workflow.
 It builds the installers on macOS, Linux, and Windows.
 A final job collects all four formats and publishes them with the executable JAR through JReleaser.
 The workflow uses `GITHUB_TOKEN` with write access to repository contents for publication.
+
+
+## Container build
+
+With Podman running, build a local image using JReleaser:
+
+```shell
+./gradlew buildContainer
+```
+
+The image is `localhost/crg/scoreboard:latest`.
+This task builds locally and does not log in or publish to a registry.
+It includes the complete application distribution, web assets, configuration, and a Java 17 runtime.
+No source files are moved.
+Ordinary `./gradlew build` does not require a container runtime.
+`./gradlew prepareContainer` generates the Dockerfile under
+`build/jreleaser/prepare/container/docker/` without building an image.
+
+```shell
+podman run --name scoreboard --init -p 8000:8000 \
+  -v scoreboard-autosave:/opt/scoreboard/config/autosave \
+  -v scoreboard-games:/opt/scoreboard/html/game-data \
+  localhost/crg/scoreboard:latest
+```
+
+Open <http://localhost:8000/>.
+The server runs as UID/GID `10001:10001`.
+Named volumes preserve autosaves and game exports across container replacement.
+For bind mounts, ensure this user can write to the mounted directories.
+Uploaded logos, sponsor banners, and custom themes can also be persisted with volumes mounted
+at their corresponding paths under `/opt/scoreboard/html/`.
+
+The default arguments are `--nogui --nodiscovery --import=`.
+mDNS discovery is disabled for bridge networking.
+Importing from adjacent installations is disabled.
+Arguments after the image name replace these defaults; for example,
+use `--network=host` and `--nogui --import=` to enable discovery on a Linux host.
