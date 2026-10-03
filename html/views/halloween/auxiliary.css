@@ -19,7 +19,13 @@
   --group-gap: 12px;
   --group-border-top: 1px solid #71404c;
 }
-html.haunted-auxiliary, .haunted-auxiliary body { background: var(--haunted-background); }
+html.haunted-auxiliary {
+  min-height: 100vh;
+  background: var(--haunted-background);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+.haunted-auxiliary body { background: transparent; }
 .haunted-auxiliary body { margin: 12px; color: var(--haunted-text); font-family: Arial, Helvetica, sans-serif; }
 .haunted-auxiliary .sbSegment { min-width: 0; border: 2px solid var(--haunted-blood); }
 .haunted-auxiliary .sbGroup { box-sizing: border-box; }
