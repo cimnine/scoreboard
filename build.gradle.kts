@@ -136,10 +136,21 @@ val generateVersionProperties by tasks.registering {
     }
 }
 
+// Keep the Ant source layout; Gradle does not require src/main/java.
 sourceSets {
     main {
+        java.setSrcDirs(listOf("src"))
         resources {
+            setSrcDirs(listOf("src"))
+            include("**/*.properties")
             srcDir(generateVersionProperties)
+        }
+    }
+    test {
+        java.setSrcDirs(listOf("tests"))
+        resources {
+            setSrcDirs(listOf("tests"))
+            exclude("**/*.java")
         }
     }
 }

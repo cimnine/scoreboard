@@ -62,9 +62,16 @@ Now you can go to the tab with the documentation and either go to the Quick Star
 
 ## Development
 
-For development, you need at least Java SDK 21 on your computer.
+For development, use Java SDK 11 or newer to run the Gradle wrapper.
+The build uses a Java 11 toolchain, which Gradle can download automatically.
 
 This project uses Gradle as dependency and build management tool.
+The existing directory layout is preserved: production Java sources remain in
+`src/`, tests remain in `tests/`, and classpath properties files remain beside
+sources in `src/`. Gradle source sets point to these directories explicitly.
+Generated version properties and all build outputs go under `build/`; no source
+files need to move. The `html/` and `config/` directories remain in the project
+root and are included in application distributions.
 You don't need gradle installed, as you can use the gradle wrapper:
 
 ```shell
