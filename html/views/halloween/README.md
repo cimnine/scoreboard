@@ -4,9 +4,10 @@ This package targets the **dev** branch's JSON/WebSocket display API. It was ver
 
 ## Install and open
 
-1. Extract the package into your scoreboard installation folder. The result must be `html/views/halloween/scoreboard.html` alongside the existing `html/views/standard/` directory.
+1. Extract the package into your scoreboard installation folder. The result must include `html/views/halloween/scoreboard.html` and `html/themes/custom/Halloween.js`. Both are included in the package.
 2. Start the scoreboard normally and select the current game in the operator screen.
-3. Open one of these URLs (replace the hostname/port if your server uses another address):
+3. Refresh the main menu and choose **Halloween** in the **Theme** selector. **Main Scoreboard** opens the Halloween venue layout; **Broadcast Overlay** opens the Halloween overlay with a transparent canvas. The selected theme travels in the display link URL, as with the other themes.
+4. For a separate OBS intermission source, or explicit display/background options, use one of these URLs (replace the hostname/port if your server uses another address):
 
 | Screen | URL |
 | --- | --- |
@@ -15,7 +16,7 @@ This package targets the **dev** branch's JSON/WebSocket display API. It was ver
 | Broadcast intermission overlay | `http://localhost:8000/views/halloween/intermission.html?background=transparent` |
 | Full scoreboard over live footage, with automatic intermission | `http://localhost:8000/views/halloween/scoreboard.html?background=transparent` |
 
-These are dedicated display views; they do not add a theme option to the standard view's settings menu. Use the venue URL in the projector browser, and the broadcast URLs as OBS browser sources. All operator controls continue to work through the normal scoreboard UI. The theme only reads live data.
+The native theme selector discovers the `Halloween.js` entry through the standard themes media collection. It routes the standard scoreboard and broadcast display links to these dedicated layouts, preserving URL options; menus and operator panels keep their usual layout. Use the venue URL in the projector browser, and the broadcast URLs as OBS browser sources. All operator controls continue to work through the normal scoreboard UI. The theme only reads live data.
 
 The scoreboard automatically changes to intermission while its clock runs, then to final score when the final intermission or official-score state is reached. The standalone intermission URL always displays the intermission/final layout, so OBS can control its visibility separately.
 
@@ -58,4 +59,4 @@ See `ARTWORK.md`. The SVG artwork and theme source are original code created for
 
 ## Verification
 
-Verified against an isolated running dev server: score updates, alternate names, team swap with HOME sponsor following, active timeout, sponsor rotation, automatic intermission, and transparent/paused CSS variables overridden using `!important`. Browser layouts were checked at 1024×768, 1920×1080, and 1920×1200. This is browser verification; physical projector and OBS compositing checks remain for your venue setup.
+Verified native theme discovery, selection, and routing of the main scoreboard and broadcast links. Verified against an isolated running dev server: score updates, alternate names, team swap with HOME sponsor following, active timeout, sponsor rotation, automatic intermission, and transparent/paused CSS variables overridden using `!important`. Browser layouts were checked at 1024×768, 1920×1080, and 1920×1200. This is browser verification; physical projector and OBS compositing checks remain for your venue setup.

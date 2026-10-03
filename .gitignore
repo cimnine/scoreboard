@@ -18,7 +18,8 @@ html/videos/fullscreen
 html/game-data
 html/custom
 !html/custom/view/example.html
-html/themes/custom
+html/themes/custom/*
+!html/themes/custom/Halloween.js
 GameData
 android/.gradle/
 android/assets/
