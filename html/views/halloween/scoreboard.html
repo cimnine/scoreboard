@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later -->
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Haunted Rink · scoreboard</title>
+<script src="/external/jquery/jquery.js"></script>
+<script src="/json/core.js"></script>
+</head><body data-display="scoreboard">
+<svg style="position:absolute;width:0;height:0" aria-hidden="true"><defs>
+<symbol id="bat" viewBox="0 0 120 60"><path fill="currentColor" d="M60 21L53 9L48 22Q24 7 4 3L11 30Q23 23 28 40Q41 32 50 48L60 56L70 48Q79 32 92 40Q97 23 109 30L116 3Q96 7 72 22L67 9Z"/><path class="bat-eyes" d="M56 29L58 31M64 29L62 31" stroke-width="2.5" stroke-linecap="round"/></symbol><symbol id="blood" viewBox="0 0 400 50" preserveAspectRatio="none"><path fill="currentColor" d="M0 0H400V9H358V21Q358 31 351 31Q344 31 344 21V9H306V40Q306 50 299 50Q292 50 292 40V9H91V28Q91 38 84 38Q77 38 77 28V9H46V17Q46 27 39 27Q32 27 32 17V9H0Z"/></symbol><symbol id="pumpkin" viewBox="0 0 100 100"><path d="M49 24 Q45 7 61 8" fill="none" stroke="#a87643" stroke-width="7"/><ellipse cx="32" cy="59" rx="24" ry="33" fill="#e46b16"/><ellipse cx="69" cy="59" rx="24" ry="33" fill="#e46b16"/><ellipse cx="50" cy="60" rx="23" ry="35" fill="#ff8a24"/><path class="pumpkin-eyes" d="M29 48 L42 53 L30 59 Z M70 48 L58 53 L69 59 Z"/><path d="M46 63 L54 63 L50 57 Z M29 70 L42 75 L48 72 L55 76 L71 68 Q62 89 49 85 Q36 84 29 70" fill="#281626"/></symbol>
+<symbol id="ghost" viewBox="0 0 100 100"><path d="M20 85 V42 C20 1 80 1 80 42 V85 L68 77 L57 89 L46 78 L33 89 Z" fill="currentColor"/><ellipse cx="40" cy="42" rx="5" ry="8" fill="#201624"/><ellipse cx="61" cy="42" rx="5" ry="8" fill="#201624"/><ellipse cx="51" cy="61" rx="6" ry="8" fill="#201624"/></symbol>
+<symbol id="web" viewBox="0 0 100 100"><g fill="none" stroke="currentColor" stroke-width="3"><path d="M0 0 L100 12 M0 0 L93 45 M0 0 L72 73 M0 0 L43 95 M0 0 L10 100 M23 3 Q19 8 22 11 Q15 13 17 17 Q9 17 10 23 Q3 21 2 25 M47 6 Q39 15 44 22 Q30 25 34 34 Q18 33 22 48 Q6 41 5 50 M73 9 Q60 23 67 33 Q46 36 53 53 Q27 52 33 74 Q9 65 8 76 M98 12 Q80 30 90 44 Q62 49 72 73 Q37 71 44 98 Q13 86 10 100"/></g></symbol>
+</defs></svg>
+<div class="frame" id="frame"><section class="screen full-scoreboard" id="scoreboard">
+<div class="board-title"><span>HAUNTED RINK</span><span>HALLOWEEN BOUT</span></div>
+<div class="board-grid">
+<div class="board-team panel"><svg class="blood-drips" aria-hidden="true"><use href="#blood"/></svg><svg class="web" aria-hidden="true"><use href="#web"/></svg><div class="board-kicker">HOME</div><h2>—</h2><div class="board-score">—</div><div class="board-detail"><span class="lead">LEAD JAMMER</span><span>JAM POINTS <b>—</b></span></div><div class="board-resources"><span>TIMEOUTS <i class="pip"></i><i class="pip"></i><i class="pip empty"></i></span><span>REVIEWS <b>—</b></span></div><svg class="pumpkin" aria-hidden="true"><use href="#pumpkin"/></svg></div>
+<div class="board-clocks"><svg class="bat board-bat" aria-hidden="true"><use href="#bat"/></svg><svg class="bat board-bat satellite left" aria-hidden="true"><use href="#bat"/></svg><svg class="bat board-bat satellite right" aria-hidden="true"><use href="#bat"/></svg><div class="panel board-clock"><div class="board-kicker">PERIOD</div><strong>—</strong></div><div class="panel board-clock jam-clock"><div class="board-kicker">JAM</div><strong>—</strong><div class="board-kicker">JAM IN PROGRESS</div></div><div class="spooky-icons"><svg class="pumpkin" aria-hidden="true"><use href="#pumpkin"/></svg><svg class="ghost" aria-hidden="true"><use href="#ghost"/></svg><svg class="pumpkin" aria-hidden="true"><use href="#pumpkin"/></svg></div></div>
+<div class="board-team panel"><svg class="blood-drips" aria-hidden="true"><use href="#blood"/></svg><svg class="web right" aria-hidden="true"><use href="#web"/></svg><div class="board-kicker">AWAY</div><h2>—</h2><div class="board-score">—</div><div class="board-detail"><span class="lead" hidden>LEAD JAMMER</span><span>JAM POINTS <b>—</b></span></div><div class="board-resources"><span>TIMEOUTS <i class="pip"></i><i class="pip empty"></i><i class="pip empty"></i></span><span>REVIEWS <b>—</b></span></div><svg class="pumpkin right" aria-hidden="true"><use href="#pumpkin"/></svg></div>
+</div>
+<div class="sponsor-band"><div class="sponsor-title">OUR HOME TEAM SPONSORS</div><div class="sponsor"><img hidden alt="Sponsor"></div></div>
+</section>
+<section class="screen intermission" id="intermission" hidden><svg class="bat inter-bat" aria-hidden="true"><use href="#bat"/></svg><svg class="bat inter-bat satellite left" aria-hidden="true"><use href="#bat"/></svg><svg class="bat inter-bat satellite right" aria-hidden="true"><use href="#bat"/></svg><svg class="pumpkin inter-pumpkin-extra" aria-hidden="true"><use href="#pumpkin"/></svg>
+<svg class="web" aria-hidden="true"><use href="#web"/></svg><svg class="web right" aria-hidden="true"><use href="#web"/></svg><svg class="pumpkin" aria-hidden="true"><use href="#pumpkin"/></svg><svg class="ghost" aria-hidden="true"><use href="#ghost"/></svg>
+<div class="inter-content"><svg class="blood-drips" aria-hidden="true"><use href="#blood"/></svg><div class="event">Haunted Rink · Halloween bout</div><h2>We'll be fright back.</h2><div class="inter-subtitle">Intermission • Happy Halloween</div><div class="return-label">PLAY RESUMES IN</div><div class="countdown">—</div><div class="inter-score"><span class="name">—</span><strong>—</strong><span class="dash">—</span><strong>—</strong><span class="name">—</span></div></div>
+<div class="sponsor-band"><div class="sponsor-title">THANK YOU TO OUR HOME TEAM SPONSORS</div><div class="sponsor"><img hidden alt="Sponsor"></div></div>
+</section></div>
+
+</body></html>
