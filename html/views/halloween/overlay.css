@@ -1,0 +1,86 @@
+/* SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later */
+/* Theme the native overlay so every Overlay.Interactive setting remains live. */
+:root.haunted-overlay {
+  --haunted-background: transparent;
+  --haunted-motion: running;
+  --haunted-panel: linear-gradient(135deg, #2a1019d9, #100b10b8);
+  --haunted-blood: #d52b39;
+  --haunted-text: #fff4e6;
+}
+html.haunted-overlay, .haunted-overlay body { background: var(--haunted-background) !important; }
+.haunted-overlay body { font-family: Arial, Helvetica, sans-serif; color: var(--haunted-text); }
+.haunted-overlay .barBackgroundTop,
+.haunted-overlay .barBackgroundBottom,
+.haunted-overlay .TeamBox .barBackground,
+.haunted-overlay .ClockBarMiddle,
+.haunted-overlay .OverlayPanel h1,
+.haunted-overlay .OverlayPanel h2,
+.haunted-overlay .OverlayPanel h4,
+.haunted-overlay .OverlayPanel h5,
+.haunted-overlay .PPJContainer {
+  background: var(--haunted-panel); color: var(--haunted-text); border-top: 3px solid var(--haunted-blood);
+}
+/* Preserve native Show/Hide transforms, with a compact row near the bottom. */
+.haunted-overlay .TeamBox.AnimatedPanel {
+  top: auto; bottom: 6%; left: 7%; width: 62%; max-width: none;
+  display: flex; gap: .5em; overflow: visible; font-size: 2em;
+}
+.haunted-overlay .TeamBox.PanelHideTop { transform: translateY(350%); }
+.haunted-overlay .TeamBox.PanelHideTop.Show { transform: translateY(0); }
+.haunted-overlay .TeamBox > [Team] { flex: 1; min-width: 0; position: relative; overflow: visible; }
+.haunted-overlay .TeamBox .Team { width: calc(100% - 1.6em); border: 0; border-radius: .2em; }
+.haunted-overlay .TeamBox.Lineups.UseLT .Team { width: 100%; }
+.haunted-overlay .TeamBox .Team .Name { padding: .4em .3em; width: 60%; font-size: .75em; white-space: normal; overflow-wrap: anywhere; line-height: 1.1; min-height: 3.2em; box-sizing: border-box; border: 0; }
+.haunted-overlay .TeamBox .Team .Score { width: 25%; padding: .2em .1em; font-size: 1.25em; box-sizing: border-box; }
+.haunted-overlay .TeamBox .Team .Mini { width: 10%; padding-top: .6em; }
+.haunted-overlay .TeamBox .Indicator { height: auto; min-height: 2.5em; background: #581827; color: var(--haunted-text); }
+.haunted-overlay .TeamBox .Team .Dot { background: #ff8a24; }
+.haunted-overlay .TeamBox .JammerBox { background: var(--haunted-panel); color: var(--haunted-text); padding: .2em; position: relative; z-index: 0; box-sizing: border-box; width: 100%; }
+.haunted-overlay .ClockBox.TopClock { top: auto; bottom: 6%; right: 7%; width: 22%; }
+.haunted-overlay .ClockBox.PanelHideTop { transform: translateY(350%); }
+.haunted-overlay .ClockBox.PanelHideTop.Show { transform: translateY(0); }
+.haunted-overlay .ClockBarTop, .haunted-overlay .BottomRow { box-sizing: border-box; }
+.haunted-overlay .ClockBarTop { font-size: 1.5em; }
+.haunted-overlay .ClockBarBottom { font-size: 2.4em; font-variant-numeric: tabular-nums; }
+.haunted-overlay .TeamBox .haunted-sponsor { position: absolute; left: 0; bottom: calc(100% + .5em); width: 100%; height: 1.7em; background: white; border-radius: 3px; }
+.haunted-overlay .TeamBox .haunted-sponsor img { display: block; height: 100%; width: 100%; object-fit: contain; transition: none; }
+.haunted-overlay [hidden] { display: none !important; }
+.haunted-overlay .TeamBox .haunted-decoration { position: absolute; height: 1em; width: 1em; pointer-events: none; transition: none; }
+.haunted-overlay .TeamBox .haunted-pumpkin { left: -1.2em; bottom: 0; animation: haunted-overlay-ember 10s ease-in-out infinite; }
+.haunted-overlay .TeamBox .haunted-bat { right: 0; bottom: calc(100% + 2.6em); width: 1.4em; animation: haunted-overlay-bat 11s ease-in-out infinite; }
+.haunted-overlay .TeamBox > [Team="2"] .haunted-pumpkin { left: auto; right: -1.2em; }
+.haunted-overlay .TeamBox > [Team="2"] .haunted-bat { animation-delay: -5s; }
+.haunted-overlay .TeamBox .haunted-decoration { animation-play-state: var(--haunted-motion) !important; }
+.haunted-overlay .OverlayPanel h1 { background-image: url('web.svg'), var(--haunted-panel); background-repeat: no-repeat; background-size: 3em, auto; }
+.haunted-overlay .RosterTeam .Team .Skater,
+.haunted-overlay .PenaltyTeam .Team .Skater { background: #29131ed9; color: var(--haunted-text); }
+.haunted-overlay .PenaltyTeam .Team .Number,
+.haunted-overlay .PenaltyTeam .Team .Name,
+.haunted-overlay .Points { color: var(--haunted-text); }
+.haunted-overlay .RosterTeam .Team .Skater .Number { background: #581827; }
+.haunted-overlay .AnimatedPanel .TeamLogo { object-fit: contain; }
+@keyframes haunted-overlay-ember { 50% { filter: drop-shadow(0 0 4px #ff263f80); } }
+@keyframes haunted-overlay-bat { 50% { translate: 0 -.12em; rotate: -4deg; } }
+@media (prefers-reduced-motion: reduce) {
+  .haunted-overlay .TeamBox .haunted-decoration { animation: none !important; }
+}
+
+.haunted-overlay .haunted-bat { color: #b23a49; }
+.haunted-overlay .haunted-bat .bat-eyes { stroke: #ffde8c; opacity: .3; animation: haunted-bat-eyes 19s linear infinite; }
+.haunted-overlay .haunted-pumpkin .pumpkin-eyes { fill: #ffe98c; animation: haunted-pumpkin-eyes 7s ease-in-out infinite; }
+.haunted-overlay .haunted-decoration .bat-eyes,
+.haunted-overlay .haunted-decoration .pumpkin-eyes { animation-play-state: var(--haunted-motion) !important; }
+@keyframes haunted-bat-eyes { 0%, 72%, 79%, 100% { opacity: .3; } 73%, 75%, 77% { opacity: 1; stroke: #ff4051; } 74%, 76%, 78% { opacity: .1; } }
+@keyframes haunted-pumpkin-eyes { 0%, 100% { fill: #ffe98c; } 50% { fill: #ff263f; } }
+@media (prefers-reduced-motion: reduce) {
+  .haunted-overlay .haunted-decoration .bat-eyes,
+  .haunted-overlay .haunted-decoration .pumpkin-eyes { animation: none !important; }
+}
+/* Clear the floated name/score row before the native lineup strip. */
+.haunted-overlay .TeamBox .JammerWrapper { clear: both; width: 100%; }
+.haunted-overlay .TeamBox.Lineups.UseLT .JammerBox > div { flex-direction: column; align-items: center; min-width: 0; white-space: normal; }
+.haunted-overlay .TeamBox.Lineups.UseLT .JammerBox .Name { white-space: normal; overflow-wrap: anywhere; max-width: 100%; }
+.haunted-overlay .TeamBox.AnimatedPanel .haunted-sponsor img { width: 100%; height: 100%; object-fit: contain; }
+/* Keep lower thirds clear of the bottom score/lineup panels. */
+.haunted-overlay .LowerThird.AnimatedPanel { top: 55%; left: 7%; }
+.haunted-overlay .LowerThird.PanelHideSide.Show { transform: translateX(0); }
