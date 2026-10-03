@@ -2,11 +2,33 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cimg/base:current-22.04
+      - image: cimg/openjdk:11.0
     steps:
       - checkout
-      - run: sudo apt update && sudo apt -y install ant junit4
-      - run: ant
+      - restore_cache:
+          keys:
+            - gradle-v1-{{ arch }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "settings.gradle.kts" }}-{{ checksum "gradle/libs.versions.toml" }}-{{ checksum "gradle.properties" }}
+            - gradle-v1-{{ arch }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-
+            - gradle-v1-{{ arch }}-
+      - run:
+          name: Build and test with Gradle
+          command: ./gradlew --no-daemon build --console=plain
+      - save_cache:
+          key: gradle-v1-{{ arch }}-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}-{{ checksum "build.gradle.kts" }}-{{ checksum "settings.gradle.kts" }}-{{ checksum "gradle/libs.versions.toml" }}-{{ checksum "gradle.properties" }}
+          paths:
+            - ~/.gradle/caches
+            - ~/.gradle/wrapper
+      - store_test_results:
+          path: build/test-results/test
+      - store_artifacts:
+          path: build/reports/tests/test
+          destination: test-report
+      - store_artifacts:
+          path: build/libs
+          destination: jars
+      - store_artifacts:
+          path: build/distributions
+          destination: distributions
   compat:
     docker:
       - image: cimg/node:24.18.0
