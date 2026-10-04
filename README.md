@@ -24,7 +24,7 @@ The scoreboard should be unzipped into a folder on the local machine. The user r
 
 ### Java
 
-Java is required for providing a Java Runtime Environment (JRE) version 8.0 or newer. Installing the latest version of Oracle's Java is recommended.
+Java is required for providing a Java Runtime Environment (JRE) version 17 or newer. Installing the latest version of Oracle's Java is recommended.
 
 - Windows users can install the standard Java for Windows package that is available when clicking on Free Java Download from [Oracle’s Java site](https://java.com/).
 
@@ -61,7 +61,7 @@ Now you can go to the tab with the documentation and either go to the Quick Star
 
 ## Development with Gradle
 
-Use Java SDK 11 or newer to run the wrapper. Gradle uses a Java 11 toolchain
+Use Java SDK 17 or newer to run the wrapper. Gradle uses a Java 17 toolchain
 and can download it automatically. No system Gradle installation is needed.
 
 ```shell
@@ -84,10 +84,37 @@ root before starting the server. ZIP and TAR distributions are in
 
 Ant and its checked-in dependencies remain available during the transition.
 Gradle resolves dependencies from Maven Central, using the same dependency
-versions as the current Ant build. The Gradle runtime requires Java 11.
+versions as the current Ant build. The Gradle runtime requires Java 17.
 
 Gradle generates the same version metadata fields as Ant: `release`,
 `release.commit`, `release.user`, `release.time`, and `release.host`. Development
 builds append a timestamp to the Git description; use `-PisRelease=true` when
 building a release to omit that suffix. The executable JAR keeps one entry per
 path, merges service registrations, and combines dependency license notices.
+
+## Native installers and releases
+
+Native installers bundle a Java 17 runtime.
+JReleaser builds DMG on macOS, DEB and RPM on Linux, and EXE on Windows.
+Each format must be built on its target operating system.
+Run the packaging command with JDK 17.
+Linux requires `fakeroot` and `rpm`.
+Windows requires WiX 3 with `candle.exe` and `light.exe` on `PATH`.
+
+```shell
+./gradlew jreleaserAssemble -PisRelease=true -PinstallerVersion=2027.1
+```
+
+Installers are written to `build/jreleaser/assemble/scoreboard/jpackage/`.
+The installer version must be numeric, such as `2027.1` or `2027.1.0`.
+Windows maps calendar years to years since 2000, so `2027.1` becomes `27.1`.
+This keeps the installer version within Windows version limits.
+Without an explicit version, the build extracts the numeric version from the Git description.
+Native launches keep configuration, autosaves, uploads, and web files in `~/.crg-scoreboard`.
+Bundled web files are refreshed on launch.
+Existing configuration and user data are preserved.
+
+Pushing a numeric version tag such as `v2027.1` runs the release workflow.
+It builds the installers on macOS, Linux, and Windows.
+A final job collects all four formats and publishes them with the executable JAR through JReleaser.
+The workflow uses `GITHUB_TOKEN` with write access to repository contents for publication.

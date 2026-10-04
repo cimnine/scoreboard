@@ -194,14 +194,14 @@ public final class Main extends Logger {
         Path sourcePath = null;
         if (importPath == null) {
             // no import path given on command line
-            if (Files.exists(Paths.get("config", "autosave"))) {
+            if (Files.exists(BasePath.get().toPath().resolve("config/autosave"))) {
                 Logger.printMessage("Found existing autosave dir - skipping import");
                 return;
             } // if not first start don't import
 
             long newestAutosave = 0;
             try (DirectoryStream<Path> stream =
-                     Files.newDirectoryStream(Paths.get(".").toAbsolutePath().normalize().getParent())) {
+                     Files.newDirectoryStream(BasePath.get().toPath().toAbsolutePath().normalize().getParent())) {
                 for (Path dir : stream) {
                     if (Files.isDirectory(dir)) {
                         Path autosave = dir.resolve(Paths.get("config", "autosave", "scoreboard-0-secs-ago.json"));
@@ -229,7 +229,7 @@ public final class Main extends Logger {
         }
 
         Logger.printMessage("importing data from " + sourcePath.toString());
-        Path targetPath = Paths.get(".");
+        Path targetPath = BasePath.get().toPath();
         try {
             copyFiles(sourcePath, targetPath, Paths.get("config", "autosave"), ".json",
                       StandardCopyOption.REPLACE_EXISTING);

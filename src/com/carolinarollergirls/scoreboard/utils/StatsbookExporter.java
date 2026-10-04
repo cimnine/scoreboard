@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -61,7 +60,7 @@ public final class StatsbookExporter extends Thread {
             public void run() {
                 try {
                     sb.set(ScoreBoard.BLANK_STATSBOOK_FOUND, "checking");
-                    FileInputStream in = new FileInputStream(Paths.get(blankStatsbookPath).toFile());
+                    FileInputStream in = new FileInputStream(BasePath.get().toPath().resolve(blankStatsbookPath).toFile());
                     Workbook wb = WorkbookFactory.create(in);
                     in.close();
 
@@ -80,7 +79,7 @@ public final class StatsbookExporter extends Thread {
                     List<Integer> values = Arrays.asList(4, 4, 4);
                     cell.setCellFormula(values.stream().map(String::valueOf).collect(Collectors.joining("+")));
 
-                    Path tmpPath = Paths.get("config/~tmp.xlsx");
+                    Path tmpPath = BasePath.get().toPath().resolve("config/~tmp.xlsx");
                     FileOutputStream out = new FileOutputStream(tmpPath.toFile());
                     wb.write(out);
                     out.close();
@@ -104,7 +103,7 @@ public final class StatsbookExporter extends Thread {
             if (!"".equals(blankStatsbookPath)) {
                 Path tmpPath = BasePath.get().toPath().resolve("html/game-data/xlsx/~" + game.getFilename() + ".xlsx");
                 Path fullPath = BasePath.get().toPath().resolve("html/game-data/xlsx/" + game.getFilename() + ".xlsx");
-                Files.copy(Paths.get(blankStatsbookPath), tmpPath, REPLACE_EXISTING);
+                Files.copy(BasePath.get().toPath().resolve(blankStatsbookPath), tmpPath, REPLACE_EXISTING);
                 FileInputStream in = new FileInputStream(tmpPath.toFile());
                 wb = WorkbookFactory.create(in);
                 in.close();

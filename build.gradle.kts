@@ -71,7 +71,7 @@ dependencies {
 // Apply a specific Java toolchain to ease working on different environments.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
@@ -216,6 +216,42 @@ tasks.classes {
     dependsOn(generateVersionProperties)
 }
 
+val installerResources by tasks.registering(Sync::class) {
+    dependsOn(tasks.installDist)
+    from(layout.buildDirectory.dir("install/CRG Scoreboard")) {
+        exclude("bin/**", "lib/**")
+    }
+    into(layout.buildDirectory.dir("installer-resources"))
+}
+
+val packagingJdk = javaToolchains.launcherFor {
+    languageVersion = JavaLanguageVersion.of(17)
+}.map { it.metadata.installationPath.asFile.absolutePath }
+
+val packagingPlatform = providers.provider {
+    val os = System.getProperty("os.name").lowercase().let {
+        when {
+            it.startsWith("windows") -> "windows"
+            it.startsWith("mac") -> "osx"
+            it.startsWith("linux") -> "linux"
+            else -> error("Unsupported packaging OS: $it")
+        }
+    }
+    val arch = when (val arch = System.getProperty("os.arch")) {
+        "amd64", "x86_64" -> "x86_64"
+        "aarch64", "arm64" -> "aarch_64"
+        else -> error("Unsupported packaging architecture: $arch")
+    }
+    "$os-$arch"
+}
+
+val installerVersion = providers.gradleProperty("installerVersion").orElse(
+    providers.provider {
+        Regex("\\d+\\.\\d+(?:\\.\\d+)?").find(project.version.toString())?.value
+            ?: error("Set -PinstallerVersion to a numeric installer version")
+    }
+)
+
 jreleaser {
     project {
         name = "CRG Scoreboard"
@@ -241,6 +277,89 @@ jreleaser {
             license = "https://github.com/rollerderby/scoreboard/blob/dev/COPYING"
         }
         stereotype = Stereotype.WEB
+    }
+
+    if (providers.gradleProperty("nativeRelease").isPresent) {
+        files {
+            listOf("dmg", "deb", "rpm", "exe").forEach { extension ->
+                glob {
+                    pattern = "build/native-release/*.$extension"
+                }
+            }
+        }
+    } else {
+        assemble {
+            jlink {
+                create("scoreboard-runtime") {
+                    active = Active.ALWAYS
+                    exported = false
+                    copyJars = false
+                    executable = "scoreboard"
+                    java {
+                        mainClass = "com.carolinarollergirls.scoreboard.NativeMain"
+                    }
+                    targetJdk {
+                        path.set(file(packagingJdk.get()))
+                        platform = packagingPlatform.get()
+                    }
+                    mainJar { path.set(tasks.shadowJar.flatMap { it.archiveFile }) }
+                    moduleNames = setOf("ALL-MODULE-PATH")
+                }
+            }
+            jpackage {
+                create("scoreboard") {
+                    active = Active.ALWAYS
+                    jlink = "scoreboard-runtime"
+                    attachPlatform = true
+                    mainJar { path.set(tasks.shadowJar.flatMap { it.archiveFile }) }
+                    java {
+                        mainClass = "com.carolinarollergirls.scoreboard.NativeMain"
+                    }
+                    applicationPackage {
+                        appName = "CRG Scoreboard"
+                        appVersion = installerVersion.map { value ->
+                            val components = value.split(".").map { it.toInt() }.toMutableList()
+                            if (packagingPlatform.get().startsWith("windows-") && components[0] >= 2000) {
+                                components[0] -= 2000
+                            }
+                            components.joinToString(".")
+                        }.get()
+                        vendor = "The CRG developers"
+                        licenseFile = "COPYING"
+                    }
+                    launcher {
+                        arguments = listOf("--gui")
+                        javaOptions = application.applicationDefaultJvmArgs.toList() +
+                            "-Dscoreboard.installDir=\$APPDIR"
+                    }
+                    linux {
+                        types = listOf("deb", "rpm")
+                        packageName = "crg-scoreboard"
+                    }
+                    osx {
+                        types = listOf("dmg")
+                        packageIdentifier = "com.carolinarollergirls.scoreboard"
+                    }
+                    windows {
+                        types = listOf("exe")
+                        perUserInstall = true
+                        dirChooser = true
+                        menu = true
+                        shortcut = true
+                        upgradeUuid = "fd184a99-5bfa-4d0b-b2c5-c0960879777a"
+                    }
+                    fileSet {
+                        input = layout.buildDirectory.dir("installer-resources").get().asFile.path
+                    }
+                }
+            }
+        }
+    }
+
+    release {
+        github {
+            tagName = "{{projectVersion}}"
+        }
     }
 
     distributions {
@@ -272,4 +391,14 @@ tasks.startScripts {
         )
         windowsScript.writeText(modifiedWindowsScript)
     }
+}
+
+tasks.named("jreleaserAssemble") {
+    inputs.file(layout.projectDirectory.file("build.gradle.kts"))
+    inputs.property("installerVersion", installerVersion)
+    dependsOn(tasks.shadowJar, installerResources)
+}
+
+tasks.named("jreleaserRelease") {
+    dependsOn(tasks.shadowJar)
 }

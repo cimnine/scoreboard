@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,6 +20,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
+import com.carolinarollergirls.scoreboard.utils.BasePath;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
@@ -82,7 +82,7 @@ public class LoadJsonScoreBoard extends HttpServlet {
                             } else if (request.getPathInfo().equalsIgnoreCase("/xlsx")) {
                                 sbImporter.read(item.openStream());
                             } else if (request.getPathInfo().equalsIgnoreCase("/blank_xlsx")) {
-                                Path outputPath = Paths.get("blank_statsbook.xlsx");
+                                Path outputPath = BasePath.get().toPath().resolve("blank_statsbook.xlsx");
                                 Files.copy(item.openStream(), outputPath, StandardCopyOption.REPLACE_EXISTING);
                                 scoreBoard.runInBatch(new Runnable() {
                                     @Override
