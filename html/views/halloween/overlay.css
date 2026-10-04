@@ -40,9 +40,9 @@ html.haunted-overlay, .haunted-overlay body { background: var(--haunted-backgrou
 .haunted-overlay .TeamBox .Team .DotTimeouts { width: auto; padding: 0; float: none; display: flex; gap: .5vw; align-items: center; }
 .haunted-overlay .TeamBox .Team .Dot { width: .8vw; height: .8vw; margin: 0; background: #ff8a24; box-sizing: border-box; }
 .haunted-overlay .TeamBox .Team .Dot.Used { opacity: 1; background: transparent; border: 2px solid #c4a8ad; }
-.haunted-overlay .TeamBox .Team .Dot.OfficialReview1 { border-radius: .15vw; width: 1.8vw; height: 1.5vw; background: transparent; border: 1px solid #e5d3d4; font-size: .85vw; text-align: center; }
+.haunted-overlay .TeamBox .Team .Dot.OfficialReview1 { border-radius: .15vw; margin-left: 0; width: 1.8vw; height: 1.5vw; background: transparent; border: 1px solid #ff8a24; color: #ff8a24; font-size: .85vw; text-align: center; }
 .haunted-overlay .TeamBox .Team .Dot.OfficialReview1::before { content: 'OR'; }
-.haunted-overlay .TeamBox .Team .Dot.OfficialReview1.Retained { border-color: #ffb75c; color: #ffb75c; }
+.haunted-overlay .TeamBox .Team .Dot.OfficialReview1.Used { border-color: #c4a8ad; color: #c4a8ad; opacity: .55; }
 .haunted-overlay .TeamBox .Team .Mini { width: auto; font-size: .8vw; padding: 0; }
 .haunted-overlay .TeamBox .Team .Mini .JamScore::before { content: '+'; }
 .haunted-overlay .haunted-team-extras { position: absolute; left: 0; right: 0; bottom: calc(100% + .6vw); display: flex; flex-direction: column; }
