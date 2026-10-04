@@ -413,7 +413,7 @@ jreleaser {
             docker {
                 active = Active.ALWAYS
                 useLocalArtifact.set(true)
-                downloadUrl.set(containerDistZip.flatMap { it.archiveFile }.map { it.asFile.toURI().toString() })
+                downloadUrl.set(layout.buildDirectory.file("distributions/scoreboard-container.zip").map { it.asFile.toURI().toString() })
                 baseImage.set("eclipse-temurin:17-jre-jammy")
                 templateDirectory.set(layout.projectDirectory.dir("jreleaser/container"))
                 setCommand(providers.gradleProperty("containerRuntime").orElse("podman").get())
