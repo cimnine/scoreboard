@@ -26,14 +26,14 @@ html body { font-family: Arial, Helvetica, sans-serif; color: var(--haunted-text
 .bat.satellite.left { animation-duration: 11s; animation-delay: -3s; --bat-eye-delay: -6s; }
 .bat.satellite.right { animation-duration: 13s; animation-delay: -6s; --bat-eye-delay: -13s; }
 .bat-eyes { stroke: #ffde8c; opacity: .3; animation: var(--bat-eye-animation); animation-delay: var(--bat-eye-delay); }
-.pumpkin { position: absolute; width: 3cqw; height: 3cqw; animation: pumpkin-ember 10s ease-in-out infinite; --eye-animation: eyes-glow 7s ease-in-out infinite; --eye-delay: 0s; }
-.pumpkin.right, .inter-pumpkin-extra { animation-delay: -5s; --eye-delay: -3.5s; }
+.pumpkin { position: absolute; width: 3cqw; height: 3cqw; animation: pumpkin-ember 10s ease-in-out infinite; --eye-animation: eyes-glow 18s steps(1, end) infinite; --eye-delay: 0s; }
+.pumpkin.right, .inter-pumpkin-extra { animation-delay: -5s; --eye-delay: -9s; }
 .pumpkin-eyes { fill: #ffdf85; filter: drop-shadow(0 0 2px #ffcd65); animation: var(--eye-animation); animation-delay: var(--eye-delay); }
 .ghost { color: var(--haunted-text); width: 3cqw; height: 3cqw; opacity: .8; animation: ghost-pulse 8s ease-in-out infinite; }
 .bat, .pumpkin, .ghost, .pumpkin-eyes, .bat-eyes { animation-play-state: var(--haunted-motion) !important; }
 @keyframes bat-drift { 50% { translate: .2cqw -.35cqw; } }
 @keyframes pumpkin-ember { 0%, 100% { filter: drop-shadow(0 0 .08cqw #ff8a2420); } 50% { filter: drop-shadow(0 0 .3cqw #ff8a2445); } }
-@keyframes eyes-glow { 0%, 100% { fill: #ffe98c; filter: drop-shadow(0 0 3px #ffd05f); } 50% { fill: #ff263f; filter: drop-shadow(0 0 4px #f9163f); } }
+@keyframes eyes-glow { 0%, 76%, 78%, 81%, 84%, 100% { fill: #ffe98c; filter: drop-shadow(0 0 3px #ffd05f); } 77%, 80%, 83% { fill: #ff263f; filter: drop-shadow(0 0 4px #f9163f); } }
 @keyframes ghost-pulse { 0%, 100% { opacity: .5; } 50% { opacity: .95; } }
 @keyframes ghost-float { 50% { translate: 0 -.6cqw; } }
 @keyframes bat-eye-flicker { 0%, 72%, 79%, 100% { opacity: .3; stroke: #ffde8c; filter: none; } 73%, 75%, 77% { opacity: 1; stroke: #ff4051; filter: drop-shadow(0 0 2px #ff263f); } 74%, 76%, 78% { opacity: .1; filter: none; } }

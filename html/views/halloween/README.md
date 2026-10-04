@@ -62,7 +62,8 @@ Optional URL controls for dedicated scoreboard/intermission screens: `background
 
 ## Sponsors and live data
 
-Upload sponsors through the normal scoreboard media controls under **sponsor banners**. The theme reads the same `ScoreBoard.Media.Format(images).Type(sponsor_banner)` collection as the standard dev display, orders banners by filename, and rotates them every five seconds. Uploaded artwork keeps its original colors and proportions on a white backing. The broadcast sponsor slot remains attached to native Team 1 (HOME); full scoreboard and intermission use the larger sponsor band. Slots disappear when no banners are configured.
+Upload sponsors through the normal scoreboard media controls under **sponsor banners**. The theme reads the same `ScoreBoard.Media.Format(images).Type(sponsor_banner)` collection as the standard dev display, orders banners by filename, and rotates them every five seconds. Uploaded artwork keeps its original colors and proportions on a white backing. These sponsor banners belong to the global media collection and are not assigned to individual teams.
+The broadcast sponsor bar is centered above the clocks; full scoreboard and intermission use the larger sponsor band. Slots disappear when no banners are configured.
 
 The theme follows the current game, scoreboard/overlay alternate names, scores, jam points, lead/lost/star-pass state, timeouts, official reviews, retained reviews, clock direction, and overtime. A retained review is marked by an asterisk on the venue display and the same orange review outline as an available review in the broadcast overlay. The full scoreboard uses the standard View/Preview team swap and post-timeout clock settings. The broadcast uses native `Overlay.Interactive` controls, including score/clock visibility, jammers, lineups, names, penalty clocks, team colors, scaling, background, clock after timeout, and all extra panels. Overlay Admin forwards the selected theme into its preview iframe. A `Both` post-timeout setting uses the lineup clock in this compact layout. The native connection-status warning remains enabled.
 
@@ -89,4 +90,4 @@ Its native live bindings and Overlay Admin controls remain active.
 Optional jammer and lineup strips sit above the scorebar.
 LEAD and SP badges appear beside the active jammer when jammer or lineup strips are shown.
 When those strips are hidden, the badges appear in the indicator row beneath the team panel.
-The home sponsor sits above those strips and moves down when they are hidden.
+The global sponsor bar remains centered above the clocks, independently of the jammer strips.
