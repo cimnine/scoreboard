@@ -80,6 +80,7 @@
       names[1].textContent = 'JAM ' + (WS.state['ScoreBoard.CurrentGame.Clock(Jam).Number'] || 0);
       box.querySelectorAll(':scope > [Team]').forEach(function (team) {
         var path = 'ScoreBoard.CurrentGame.Team(' + team.getAttribute('Team') + ').Color(overlay.';
+        team.classList.toggle('haunted-star-pass', isTrue(WS.state['ScoreBoard.CurrentGame.Team(' + team.getAttribute('Team') + ').StarPass']));
         var namePanel = team.querySelector('.haunted-name-panel');
         namePanel.style.background = WS.state[path + 'bg)'] || '';
         namePanel.style.color = WS.state[path + 'fg)'] || '';
@@ -89,7 +90,7 @@
     WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.Score)',
       'ScoreBoard.Settings.Setting(Overlay.Interactive.Scaling)', 'ScoreBoard.CurrentGame.Clock(*).Number',
       'ScoreBoard.CurrentGame.Team(*).Color(overlay.*)', 'ScoreBoard.CurrentGame.Team(*).Name',
-      'ScoreBoard.CurrentGame.Team(*).AlternateName(overlay)'], { triggerBatchFunc: updateLayout });
+      'ScoreBoard.CurrentGame.Team(*).AlternateName(overlay)', 'ScoreBoard.CurrentGame.Team(*).StarPass'], { triggerBatchFunc: updateLayout });
     updateLayout();
     window.addEventListener('resize', fitNames);
     var home = box.querySelector('[Team="1"]');

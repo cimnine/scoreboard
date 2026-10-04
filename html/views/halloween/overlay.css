@@ -34,9 +34,9 @@ html.haunted-overlay, .haunted-overlay body { background: var(--haunted-backgrou
 .haunted-overlay .TeamBox [Team="2"] .Team > .Score { grid-column: 4; }
 .haunted-overlay .haunted-indicators { position: absolute; top: calc(100% + .4vw); left: 0; display: flex; align-items: center; gap: .5vw; padding: .3vw .6vw; background: var(--haunted-panel); border-radius: .2vw; }
 .haunted-overlay [Team="2"] .haunted-indicators { left: auto; right: 0; }
-.haunted-overlay .TeamBox .Indicator { float: none; font-size: .95vw; width: auto; height: auto; background: none; color: #ffb75c; border-radius: 0; }
+.haunted-overlay .TeamBox .Indicator { float: none; font-size: .95vw; width: auto; height: auto; background: none; color: #ffb75c; border-radius: 0; overflow: visible; flex: none; }
 .haunted-overlay .TeamBox .Indicator .Clock { float: none; margin: 0; display: none; }
-.haunted-overlay .TeamBox .Indicator .Clock.Show:not(:empty) { display: block; border: 2px solid #ff8a24; padding: .15vw .3vw; }
+.haunted-overlay .TeamBox .Indicator .Clock.Show:not(:empty) { display: flex; align-items: center; justify-content: center; box-sizing: border-box; min-width: 1.8vw; height: 1.5vw; border: 1px solid #ff8a24; border-radius: .15vw; padding: 0 .25vw; font-size: .85vw; line-height: 1; overflow: visible; }
 .haunted-overlay .TeamBox .Team .DotTimeouts { width: auto; padding: 0; float: none; display: flex; gap: .5vw; align-items: center; }
 .haunted-overlay .TeamBox .Team .Dot { width: .8vw; height: .8vw; margin: 0; background: #ff8a24; box-sizing: border-box; }
 .haunted-overlay .TeamBox .Team .Dot.Used { opacity: 1; background: transparent; border: 2px solid #c4a8ad; }
@@ -183,3 +183,28 @@ html.haunted-overlay, .haunted-overlay body { background: var(--haunted-backgrou
 .haunted-overlay .TeamBox.InJam.ShowJammers .JammerWrapper,
 .haunted-overlay .TeamBox.Lineups.UseLT .JammerWrapper { max-height: 12vw; margin-top: .6vw; transition-delay: 0s; }
 .haunted-overlay .TeamBox:not(.Show) .JammerWrapper { transition-delay: 0s, 0s, 0s, 0s, var(--haunted-transition-duration); }
+
+.haunted-overlay .TeamBox.InJam .Lead .JammerBox .Jamming { color: var(--haunted-text); animation: none; }
+.haunted-overlay .TeamBox.InJam .Lead .JammerBox .Jamming::before,
+.haunted-overlay .TeamBox.InJam .haunted-star-pass .JammerBox .Jamming::before {
+  content: 'LEAD'; display: inline-block; flex: none; align-self: center;
+  padding: .15vw .3vw; margin: .15vw .3vw; border-radius: .15vw;
+  background: #ff8a24; color: #24121b; font-size: .75vw; line-height: 1.2; font-weight: bold;
+}
+.haunted-overlay .TeamBox:not(.Lineups.UseLT) .JammerBox > .Jamming { align-items: center; gap: .3vw; }
+.haunted-overlay .TeamBox:not(.Lineups.UseLT) .JammerBox > .Jamming > .Name,
+.haunted-overlay .TeamBox:not(.Lineups.UseLT) .JammerBox > .Jamming > .Number { flex: 1; min-width: 0; width: auto; }
+.haunted-overlay .TeamBox .JammerBox .PenaltyClock { flex: none; white-space: nowrap; }
+.haunted-overlay .TeamBox.Lineups.UseLT.InJam .Lead .JammerBox .Jamming.InBox { color: var(--element-inbox-fg, var(--haunted-text)); }
+.haunted-overlay .TeamBox.Lineups.UseLT.InJam .Lead .JammerBox .Jamming.Penalized:not(.InBox) { color: var(--element-unserved-fg, var(--haunted-text)); }
+.haunted-overlay .TeamBox.Lineups.UseLT.InJam .Lead .JammerBox .Jamming { color: var(--haunted-text); animation: none; }
+
+.haunted-overlay [Team="2"] .JammerWrapper .Name,
+.haunted-overlay [Team="2"] .JammerWrapper .Number { text-align: right; }
+
+.haunted-overlay .TeamBox.InJam .haunted-star-pass .JammerBox .Jamming::before { content: 'SP'; }
+.haunted-overlay .TeamBox.InJam.ShowJammers .haunted-indicators .Indicator,
+.haunted-overlay .TeamBox.Lineups.UseLT .haunted-indicators .Indicator { display: none; }
+.haunted-overlay .TeamBox .Indicator .Clock.Show:not(:empty) { font-size: 0; }
+.haunted-overlay .TeamBox .Indicator .Clock.Show:not(:empty)::before { content: 'LEAD'; font-size: .85vw; }
+.haunted-overlay .TeamBox .haunted-star-pass .Indicator .Clock.Show:not(:empty)::before { content: 'SP'; }

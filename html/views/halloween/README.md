@@ -87,4 +87,6 @@ Choose Halloween in the menu before opening Roster, Penalty Whiteboard, or Penal
 The broadcast retains the concept’s separate name, score, and center-clock panels.
 Its native live bindings and Overlay Admin controls remain active.
 Optional jammer and lineup strips sit above the scorebar.
+LEAD and SP badges appear beside the active jammer when jammer or lineup strips are shown.
+When those strips are hidden, the badges appear in the indicator row beneath the team panel.
 The home sponsor sits above those strips and moves down when they are hidden.
