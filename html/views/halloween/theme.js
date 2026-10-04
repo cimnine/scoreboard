@@ -1,18 +1,17 @@
 /* SPDX-License-Identifier: Apache-2.0 OR GPL-3.0-or-later */
 /* Read-only display adapter for the dev branch's JSON/WebSocket API. */
 (function () {
-  var params = new URLSearchParams(window.location.search);
   var mode = document.body.dataset.display;
-  if (params.get('background') === 'transparent') {
+  if (_getUrlParam('background') === 'transparent') {
     document.documentElement.style.setProperty('--haunted-background', 'transparent');
   }
-  if (params.get('background') === 'green') {
+  if (_getUrlParam('background') === 'green') {
     document.documentElement.style.setProperty('--haunted-background', '#00ff00');
   }
-  if (params.get('venue') === 'true') {
+  if (_getUrlParam('venue') === 'true') {
     document.documentElement.style.setProperty('--haunted-panel', 'linear-gradient(135deg,#2a1019,#100b10)');
   }
-  if (params.get('motion') === 'off') {
+  if (_getUrlParam('motion') === 'off') {
     document.documentElement.style.setProperty('--haunted-motion', 'paused');
   }
 
@@ -44,7 +43,7 @@
 
   (function () {
     var pending = false;
-    var view = params.get('preview') === 'true' ? 'Preview' : 'View';
+    var view = _getUrlParam('preview') === 'true' ? 'Preview' : 'View';
     var nameContext = mode === 'broadcast' ? 'overlay' : 'scoreboard';
     function schedule() {
       if (pending) return;

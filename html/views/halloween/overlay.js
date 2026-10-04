@@ -3,14 +3,13 @@
 (function initialize() {
   // Theme scripts are fetched in parallel with core.js dependencies.
   if (typeof WS === 'undefined') { setTimeout(initialize, 25); return; }
-  var params = new URLSearchParams(window.location.search);
   function updateBackground() {
-    var background = params.get('background');
+    var background = _getUrlParam('background');
     var color = background === 'green' ? '#00ff00' : background === 'transparent' ? 'transparent' :
       WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)'] || 'transparent';
     document.documentElement.style.setProperty('--haunted-background', color);
   }
-  if (params.get('motion') === 'off') document.documentElement.style.setProperty('--haunted-motion', 'paused');
+  if (_getUrlParam('motion') === 'off') document.documentElement.style.setProperty('--haunted-motion', 'paused');
   function updateMotion() {
     var root = document.documentElement;
     root.classList.toggle('haunted-motion-paused', getComputedStyle(root).getPropertyValue('--haunted-motion').trim() === 'paused');
